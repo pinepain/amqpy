@@ -1,4 +1,4 @@
 amqpy
 =====
 
-Lightweight AMQP framework on top of the peacl-amqp extension
+Lightweight AMQP framework built on top of the peacl-amqp extension
