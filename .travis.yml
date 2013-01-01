@@ -15,6 +15,7 @@ before_script:
 
   # get PSR-0 autoloader
   - curl -s http://getcomposer.org/installer | php --
+  - php composer.phar --dev install
 
 services:
   rabbitmq

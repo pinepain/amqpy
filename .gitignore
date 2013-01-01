@@ -1,4 +1,4 @@
-./.idea/
-./vendor/
-./composer.phar
+.idea/
+vendor/
+composer.phar
 
