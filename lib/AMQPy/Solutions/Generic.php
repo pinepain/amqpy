@@ -110,7 +110,7 @@ class Generic {
      */
     public function send($message, $routing_key = null) {
         $_m = $this->settings['exchanges']['messages'];
-        $this->exchange->send($message, $routing_key, $this->settings[]['flags'], $_m['attributes']);
+        $this->exchange->send($message, $routing_key, $_m['flags'], $_m['attributes']);
     }
 
     /**
