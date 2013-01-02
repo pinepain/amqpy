@@ -30,11 +30,10 @@ $config_example = array(
             'prefetch'   => 1, // 3 is default, but we don't allow one consumer to hold more than one message at a time
 
             'messages'   => array(
-                'flags'               => AMQP_DURABLE, // if shutdown occurred messages still be in queues
-                'attributes'          => array(
+                'flags'      => AMQP_DURABLE, // if shutdown occurred messages still be in queues
+                'attributes' => array(
                     'expiration' => 5000, // microseconds, how long messages should be stored before deleted
                 ),
-                'default_routing_key' => 'global.logger.default', // for fanout exchanges it value ignored
             ),
 
             'queues'     => array(
@@ -107,14 +106,6 @@ class Generic {
      */
     public function send($message, $routing_key = null) {
         $_m = $this->settings['exchanges']['messages'];
-
-        if (empty($routing_key)) {
-            // TODO(pinepain): test  default routing key
-            $routing_key = $_m['default_routing_key'] || 'orphan';
-        }
-
-
-
         $this->exchange->send($message, $routing_key, $this->settings[]['flags'], $_m['attributes']);
     }
 
