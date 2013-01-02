@@ -67,8 +67,8 @@ class Generic {
      * @throws AMQPException When serializer given in config does not exists
      */
     public function __construct($exchange, array $settings) {
-        $_s             = $settings;
-        $_e             = $settings['exchanges'][$exchange];
+        $_s = $settings;
+        $_e = $settings['exchanges'][$exchange];
 
         if (!isset($_e['messages']['attributes'])) {
             $_e['messages']['attributes'] = array();
@@ -107,10 +107,12 @@ class Generic {
      * @param mixed $message     Message data to send.
      * @param null  $routing_key Routing key to deliver message. Ignored for 'fanout' exchanges.
      *                           If none given default will be used
+     *
+     * @return boolean Returns TRUE on success or FALSE on failure.
      */
     public function send($message, $routing_key = null) {
         $_m = $this->settings['exchanges']['messages'];
-        $this->exchange->send($message, $routing_key, $_m['flags'], $_m['attributes']);
+        return $this->exchange->send($message, $routing_key, $_m['flags'], $_m['attributes']);
     }
 
     /**
@@ -146,19 +148,19 @@ class Generic {
             $_s = $_q[$name];
 
             if (!isset($_s['routing_key'])) {
-                $settings['routing_key'] = '#'; // listen for all messages
+                $_s['routing_key'] = '#'; // listen for all messages
             }
 
 
             if (!isset($settings['consumer_flags'])) {
-                $settings['consumer_flags'] = AMQP_NOPARAM;
+                $_s['consumer_flags'] = AMQP_NOPARAM;
             }
 
             $this->consumer_flags[$name] = $settings['consumer_flags'];
 
             $this->queues[$name] = $this->exchange->getQueue(
                 $name,
-                $settings['routing_key'],
+                $_s['routing_key'],
                 $_s['flags'],
                 isset($_s['args']) ? $_s['args'] : array()
             );
