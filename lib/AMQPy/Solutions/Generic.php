@@ -70,6 +70,11 @@ class Generic {
     public function __construct($exchange, array $settings) {
         $_s             = $settings;
         $_e             = $settings['exchanges'][$exchange];
+
+        if (!isset($_e['messages']['attributes'])) {
+            $_e['messages']['attributes'] = array();
+        }
+
         $_s['exchange'] = $_e;
         $this->settings = $_s;
 
