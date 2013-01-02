@@ -49,7 +49,6 @@ $config_example = array(
 );
 
 
-// TODO(bpa): access exchane, queue, connection and others
 class Generic {
     private $settings = array();
 
@@ -165,5 +164,17 @@ class Generic {
         }
 
         return $this->queues[$name];
+    }
+
+    public function getConnection() {
+        return $this->connection;
+    }
+
+    public function getExchange() {
+        return $this->exchange;
+    }
+
+    public function getQueues() {
+        return $this->queues;
     }
 }
