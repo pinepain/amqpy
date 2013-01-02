@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="bootstrap.php" colors="true">
     <testsuites>
-        <testsuite name="AMQPY test suite">
+        <testsuite name="AMQPy test suite">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
@@ -11,7 +11,7 @@
             <directory>./</directory>
             <exclude>
                 <directory>./demo</directory>
-                <directory>./tests</directory>
+                <!--<directory>./tests</directory>-->
                 <directory>./vendor</directory>
             </exclude>
         </whitelist>
