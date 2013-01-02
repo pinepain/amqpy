@@ -134,14 +134,15 @@ class Generic {
      * @return Queue
      * @throws AMQPException When queue not found or could not been initialized
      */
-    private function getQueue($name) {
-        $_q = $this->settings['exchanges']['queues'];
-
-        if (!isset($_q[$name])) {
-            throw new AMQPException('Queue does not exists');
-        }
-
+    public function getQueue($name) {
         if (!isset($this->queues[$name])) {
+
+            $_q = $this->settings['exchanges']['queues'];
+
+            if (!isset($_q[$name])) {
+                throw new AMQPException('Queue does not exists');
+            }
+
             $_s = $_q[$name];
 
             if (!isset($_s['routing_key'])) {
@@ -165,6 +166,7 @@ class Generic {
 
         return $this->queues[$name];
     }
+
 
     public function getConnection() {
         return $this->connection;
