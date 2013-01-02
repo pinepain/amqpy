@@ -54,4 +54,16 @@ class Queue extends AMQPQueue {
             }
         }, $flags);
     }
+
+    public function received(AMQPEnvelope $envelope) {
+        return $this->ack($envelope->getDeliveryTag());
+    }
+
+    public function resend(AMQPEnvelope $envelope) {
+        $this->nack($envelope->getDeliveryTag(), AMQP_REQUEUE);
+    }
+
+    public function drop(AMQPEnvelope $envelope) {
+        $this->nack($envelope->getDeliveryTag());
+    }
 }
