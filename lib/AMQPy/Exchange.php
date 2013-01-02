@@ -40,10 +40,10 @@ class Exchange extends AMQPExchange {
     /**
      * Publish a message to the exchange represented by the AMQPExchange object.
      *
-     * @param mixed   $message     The message to publish
-     * @param string  $routing_key The routing key to which to publish.
-     * @param integer $flags       One or more of AMQP_MANDATORY and AMQP_IMMEDIATE.
-     * @param array   $attributes  One or more from the list:
+     * @param mixed       $message     The message to publish
+     * @param string|null $routing_key The routing key to which to publish, ignored for fanout exchanges
+     * @param integer     $flags       One or more of AMQP_MANDATORY and AMQP_IMMEDIATE.
+     * @param array       $attributes  One or more from the list:
      * <pre>
      *  $attributes = array(
      *   'content_type'
@@ -68,10 +68,11 @@ class Exchange extends AMQPExchange {
      * @throw AMQPChannelException    Throws an exception if the channel is not open.
      * @throw AMQPConnectionException Throws an exception if the connection to the broker was lost
      */
-    public function send($message, $routing_key, $flags = AMQP_NOPARAM, array $attributes = array()) {
+    public function send($message, $routing_key = null, $flags = AMQP_NOPARAM, array $attributes = array()) {
         // AMQP can send only string messages, so we have to serialize it and set 'content_type'
         $message                    = $this->serializer->serialize($message);
         $attributes['content_type'] = $this->serializer->getContentType();
+
         return parent::publish($message, $routing_key, $flags, $attributes);
     }
 
@@ -99,6 +100,7 @@ class Exchange extends AMQPExchange {
         } else {
             $queue->bind($this->getName(), $routing_key);
         }
+
         return $queue;
     }
 }
