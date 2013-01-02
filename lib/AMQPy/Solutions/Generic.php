@@ -30,11 +30,10 @@ $config_example = array(
             'prefetch'   => 1, // 3 is default, but we don't allow one consumer to hold more than one message at a time
 
             'messages'   => array(
-                'flags'               => AMQP_DURABLE, // if shutdown occurred messages still be in queues
-                'attributes'          => array(
+                'flags'      => AMQP_DURABLE, // if shutdown occurred messages still be in queues
+                'attributes' => array(
                     'expiration' => 5000, // microseconds, how long messages should be stored before deleted
                 ),
-                'default_routing_key' => 'global.logger.default', // for fanout exchanges it value ignored
             ),
 
             'queues'     => array(
@@ -50,7 +49,6 @@ $config_example = array(
 );
 
 
-// TODO(bpa): access exchane, queue, connection and others
 class Generic {
     private $settings = array();
 
@@ -69,8 +67,13 @@ class Generic {
      * @throws AMQPException When serializer given in config does not exists
      */
     public function __construct($exchange, array $settings) {
-        $_s             = $settings;
-        $_e             = $settings['exchanges'][$exchange];
+        $_s = $settings;
+        $_e = $settings['exchanges'][$exchange];
+
+        if (!isset($_e['messages']['attributes'])) {
+            $_e['messages']['attributes'] = array();
+        }
+
         $_s['exchange'] = $_e;
         $this->settings = $_s;
 
@@ -104,18 +107,12 @@ class Generic {
      * @param mixed $message     Message data to send.
      * @param null  $routing_key Routing key to deliver message. Ignored for 'fanout' exchanges.
      *                           If none given default will be used
+     *
+     * @return boolean Returns TRUE on success or FALSE on failure.
      */
     public function send($message, $routing_key = null) {
         $_m = $this->settings['exchanges']['messages'];
-
-        if (empty($routing_key)) {
-            // TODO(pinepain): test  default routing key
-            $routing_key = $_m['default_routing_key'] || 'orphan';
-        }
-
-
-
-        $this->exchange->send($message, $routing_key, $this->settings[]['flags'], $_m['attributes']);
+        return $this->exchange->send($message, $routing_key, $_m['flags'], $_m['attributes']);
     }
 
     /**
@@ -139,35 +136,49 @@ class Generic {
      * @return Queue
      * @throws AMQPException When queue not found or could not been initialized
      */
-    private function getQueue($name) {
-        $_q = $this->settings['exchanges']['queues'];
-
-        if (!isset($_q[$name])) {
-            throw new AMQPException('Queue does not exists');
-        }
-
+    public function getQueue($name) {
         if (!isset($this->queues[$name])) {
+
+            $_q = $this->settings['exchanges']['queues'];
+
+            if (!isset($_q[$name])) {
+                throw new AMQPException('Queue does not exists');
+            }
+
             $_s = $_q[$name];
 
             if (!isset($_s['routing_key'])) {
-                $settings['routing_key'] = '#'; // listen for all messages
+                $_s['routing_key'] = '#'; // listen for all messages
             }
 
 
             if (!isset($settings['consumer_flags'])) {
-                $settings['consumer_flags'] = AMQP_NOPARAM;
+                $_s['consumer_flags'] = AMQP_NOPARAM;
             }
 
             $this->consumer_flags[$name] = $settings['consumer_flags'];
 
             $this->queues[$name] = $this->exchange->getQueue(
                 $name,
-                $settings['routing_key'],
+                $_s['routing_key'],
                 $_s['flags'],
                 isset($_s['args']) ? $_s['args'] : array()
             );
         }
 
         return $this->queues[$name];
+    }
+
+
+    public function getConnection() {
+        return $this->connection;
+    }
+
+    public function getExchange() {
+        return $this->exchange;
+    }
+
+    public function getQueues() {
+        return $this->queues;
     }
 }
