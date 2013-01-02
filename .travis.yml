@@ -1,21 +1,21 @@
 language: php
 
 php:
-  - "5.5"
+#  - "5.5"
   - "5.4"
-  - "5.3"
+#  - "5.3"
 
 script: phpunit --coverage-text --configuration ./tests/phpunit.xml
 
 before_script:
   # amqpy_user:amqpy_password has full access to amqpy_vhost
-  - sudo rabbitmqctl add_vhost amqpy_vhost
-  - sudo rabbitmqctl add_user amqpy_user amqpy_password
-  - sudo rabbitmqctl set_permissions -p amqpy_vhost amqpy_user ".*" ".*" ".*"
+#  - sudo rabbitmqctl add_vhost amqpy_vhost
+#  - sudo rabbitmqctl add_user amqpy_user amqpy_password
+#  - sudo rabbitmqctl set_permissions -p amqpy_vhost amqpy_user ".*" ".*" ".*"
 
   # get PSR-0 autoloader
   - curl -s http://getcomposer.org/installer | php --
   - php composer.phar --dev install
 
-services:
-  rabbitmq
+#services:
+#  rabbitmq
