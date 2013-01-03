@@ -1,7 +1,10 @@
 <?php
 /**
  * @author Ben Pinepain <pinepain@gmail.com>
- * @created 12/28/12 12:07 PM
+ * @url https://github.com/pinepain/amqpy
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace AMQPy\Solutions;
@@ -11,42 +14,6 @@ use AMQPy\Queue;
 use AMQPy\IConsumer;
 
 use \AMQPException;
-
-
-$config_example = array(
-    'credentials' => array(
-        'host'     => 'localhost',
-        'port'     => 5672,
-        'vhost'    => 'vhost',
-        'login'    => 'login',
-        'password' => 'pswd',
-    ),
-
-    'exchanges'   => array(
-        'global.logger' => array(
-            'type'       => AMQP_EX_TYPE_FANOUT, // send messages to all queues
-            'flags'      => AMQP_DURABLE, // as for now we use only persistent exchanges and queues
-            'serializer' => '\\AMQPy\Serializers\\PhpNative',
-            'prefetch'   => 1, // 3 is default, but we don't allow one consumer to hold more than one message at a time
-
-            'messages'   => array(
-                'flags'      => AMQP_DURABLE, // if shutdown occurred messages still be in queues
-                'attributes' => array(
-                    'expiration' => 5000, // microseconds, how long messages should be stored before deleted
-                ),
-            ),
-
-            'queues'     => array(
-                'global.logger.default' => array(
-                    'flags'          => AMQP_DURABLE,
-                    'routing_key'    => 'global.logger.default',
-                    'consumer_flags' => AMQP_AUTOACK,
-                    'args'           => array(),
-                ),
-            ),
-        ),
-    ),
-);
 
 
 class Generic {
@@ -107,12 +74,10 @@ class Generic {
      * @param mixed $message     Message data to send.
      * @param null  $routing_key Routing key to deliver message. Ignored for 'fanout' exchanges.
      *                           If none given default will be used
-     *
-     * @return boolean Returns TRUE on success or FALSE on failure.
      */
     public function send($message, $routing_key = null) {
         $_m = $this->settings['exchanges']['messages'];
-        return $this->exchange->send($message, $routing_key, $_m['flags'], $_m['attributes']);
+        $this->exchange->send($message, $routing_key, $_m['flags'], $_m['attributes']);
     }
 
     /**

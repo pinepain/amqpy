@@ -1,9 +1,11 @@
 <?php
 /**
  * @author Ben Pinepain <pinepain@gmail.com>
- * @created 12/26/12 3:35 PM
+ * @url https://github.com/pinepain/amqpy
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
-
 namespace AMQPy;
 
 use \AMQPChannel;

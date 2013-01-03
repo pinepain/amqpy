@@ -1,7 +1,10 @@
 <?php
 /**
  * @author Ben Pinepain <pinepain@gmail.com>
- * @created 12/27/12 4:20 PM
+ * @url https://github.com/pinepain/amqpy
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace AMQPY;

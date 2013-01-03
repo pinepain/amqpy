@@ -1,7 +1,10 @@
 <?php
 /**
  * @author Ben Pinepain <pinepain@gmail.com>
- * @created 12/31/12 @ 7:09 PM
+ * @url https://github.com/pinepain/amqpy
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 $file = __DIR__.'/../vendor/autoload.php';
