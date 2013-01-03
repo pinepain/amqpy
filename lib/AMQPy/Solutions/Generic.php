@@ -41,7 +41,7 @@ class Generic {
             $_e['messages']['attributes'] = array();
         }
 
-        $_s['exchange'] = $_e;
+        $_s['exchanges'] = $_e;
         $this->settings = $_s;
 
         // establish connection
