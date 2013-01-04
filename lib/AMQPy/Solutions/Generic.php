@@ -63,7 +63,7 @@ class Generic {
         );
 
         // force init queues associated with this exchange
-        foreach ($this->queues as $name => $queue) {
+        foreach (array_keys($_e['queues']) as $name) {
             $this->getQueue($name);
         }
     }
