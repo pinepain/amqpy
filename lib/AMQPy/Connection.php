@@ -47,7 +47,6 @@ class Connection extends AMQPConnection {
      */
     public function __construct(array $credentials = array()) {
         parent::__construct($credentials);
-        $this->setTimeout(0);
 
         $connected = $this->connect();
         if (!$connected) {
