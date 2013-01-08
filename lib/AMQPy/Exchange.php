@@ -81,7 +81,9 @@ class Exchange extends AMQPExchange {
     public function getQueue($name, $routing_key, $flags = null, array $args = array()) {
         $queue = new Queue($this->getChannel(), $this->getSerializer());
 
-        $queue->setName($name);
+        if (!empty($name)) {
+            $queue->setName($name);
+        }
 
         if (null !== $flags) {
             $queue->setFlags($flags);
