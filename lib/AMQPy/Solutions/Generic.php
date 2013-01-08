@@ -85,12 +85,14 @@ class Generic {
      *
      * @param IConsumer $consumer Consumer to process payload and handle possible errors
      * @param string    $queue    Queue name to attach consumer to;
+     *
+     * @return mixed
      */
     public function listen(IConsumer $consumer, $queue) {
         $q  = $this->getQueue($queue);
         $_q = $this->settings['exchanges']['queues'][$queue];
 
-        $q->listen($consumer, $_q['consumer_flags']);
+        return $q->listen($consumer, $_q['consumer_flags']);
     }
 
     /**

@@ -38,10 +38,16 @@ class Queue extends AMQPQueue {
      * @param IConsumer $consumer Consumer to process payload and handle possible errors
      * @param int       $flags    Consumer flags, AMQP_NOPARAM or AMQP_AUTOACK
      *
+     * @return mixed
+     *
      * @throws SerializerException
      */
     public function listen(IConsumer $consumer, $flags = AMQP_NOPARAM) {
         $serializer = $this->getSerializer();
+
+        if (false === $consumer->postConsume($this)) {
+            return null;
+        }
 
         $this->consume(function (AMQPEnvelope $envelope, Queue $queue) use ($consumer, $serializer) {
             try {
@@ -56,6 +62,8 @@ class Queue extends AMQPQueue {
                 return $consumer->except($e, $envelope, $queue);
             }
         }, $flags);
+
+        return $consumer->postConsume($this);
     }
 
     public function received(AMQPEnvelope $envelope) {
