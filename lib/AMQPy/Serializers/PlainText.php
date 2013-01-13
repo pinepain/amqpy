@@ -16,7 +16,7 @@ use \Exceptions\AMQPy\SerializerException;
 
 
 class PlainText implements ISerializer {
-    private static $mime = 'plain/text';
+    const MIME = 'plain/text';
 
     public function serialize($value) {
         if (!is_string($value) && !is_numeric($value)) {
@@ -26,15 +26,15 @@ class PlainText implements ISerializer {
         return (string)$value;
     }
 
-    public function parse($string) {
-        if (!is_string($string)|| !is_numeric($string)) {
+    public function parse($value) {
+        if (!is_string($value) && !is_numeric($value)) {
             throw new SerializerException("Failed to parse value: Incompatible type");
         }
 
-        return $string;
+        return $value;
     }
 
     public function getContentType() {
-        return self::$mime;
+        return self::MIME;
     }
 }

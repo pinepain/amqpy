@@ -16,7 +16,7 @@ use \Exceptions\AMQPy\SerializerException;
 
 
 class JSON implements ISerializer {
-    private static $mime = 'application/json';
+    const MIME = 'application/json';
 
     const JSON_UNKNOWN_ERROR = 'Unknown error';
     const JSON_ENCODED_NULL  = 'null';
@@ -29,8 +29,8 @@ class JSON implements ISerializer {
         JSON_ERROR_UTF8           => 'Malformed UTF-8 characters, possibly incorrectly encoded',
     );
 
-    public function serialize($value, $deep = null) {
-        $value = json_encode($value);
+    public function serialize($value) {
+        $value = json_encode($value);// shut up but then throw an exception
 
         if ($this->isErrorOccurred()) {
             throw new SerializerException("Failed to serialize value: " . $this->getLastError());
@@ -49,12 +49,12 @@ class JSON implements ISerializer {
     }
 
     public function getContentType() {
-        return self::$mime;
+        return self::MIME;
     }
 
 
     private function isErrorOccurred() {
-        return JSON_ERROR_NONE == json_last_error();
+        return JSON_ERROR_NONE !== json_last_error();
     }
 
     private function getLastError() {

@@ -16,9 +16,9 @@ use \Exceptions\AMQPy\SerializerException;
 
 
 class PhpNative implements ISerializer {
-    private static $false = 'b:0;';
+    const MIME = 'application/vnd.php.serialized';
 
-    private static $mime = 'application/vnd.php.serialized';
+    private static $false = 'b:0;';
 
     public function serialize($value) {
         return serialize($value);
@@ -29,7 +29,7 @@ class PhpNative implements ISerializer {
             throw new SerializerException("Failed to parse value: Incompatible type");
         }
 
-        $parsed = unserialize($string);
+        $parsed = @unserialize($string); // shut up but then throw an exception
 
         if (false === $parsed && self::$false !== $string) {
             throw new SerializerException("Failed to parse value: String is not unserializeable");
@@ -39,6 +39,6 @@ class PhpNative implements ISerializer {
     }
 
     public function getContentType() {
-        return self::$mime;
+        return self::MIME;
     }
 }

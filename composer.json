@@ -15,7 +15,8 @@
     },
     "autoload" : {
         "psr-0" : {
-            "AMQPy" : "./lib"
+            "AMQPy" : "./lib",
+            "Exceptions" : "./lib"
         }
     }
 }
