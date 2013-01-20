@@ -25,6 +25,7 @@ class ChannelTest extends \PHPUnit_Framework_TestCase {
      */
     protected function setUp() {
         $this->connection = new Connection();
+        $this->connection->connect();
     }
 
     /**

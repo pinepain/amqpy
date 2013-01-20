@@ -16,14 +16,15 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
     /**
      * @var Connection
      */
-    protected $object;
+    protected $connection;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $this->object = new Connection();
+        $this->connection = new Connection();
+        $this->connection->connect();
     }
 
     /**
@@ -31,7 +32,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
      * This method is called after a test is executed.
      */
     protected function tearDown() {
-        $this->object->disconnect();
+        $this->connection->disconnect();
     }
 
     /**
@@ -53,40 +54,40 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
      * @covers AMQPy\Connection::setDefaultChannel
      */
     public function testGetChannel() {
-        $ch = $this->object->getChannel();
+        $ch = $this->connection->getChannel();
         $this->assertInstanceOf('\AMQPy\Channel', $ch);
-        $this->assertSame($ch->getConnection(), $this->object);
-        $this->assertNotSame($ch, $this->object->getChannel());
+        $this->assertSame($ch->getConnection(), $this->connection);
+        $this->assertNotSame($ch, $this->connection->getChannel());
     }
 
     /**
      * @covers AMQPy\Connection::getDefaultChannel
      */
     public function testGetDefaultChannel() {
-        $ch = $this->object->getDefaultChannel();
+        $ch = $this->connection->getDefaultChannel();
         $this->assertInstanceOf('\AMQPy\Channel', $ch);
-        $this->assertSame($ch, $this->object->getDefaultChannel());
+        $this->assertSame($ch, $this->connection->getDefaultChannel());
     }
 
     /**
      * @covers AMQPy\Connection::setDefaultChannel
      */
     public function testSetDefaultChannelImplicit() {
-        $ch = $this->object->getChannel();
-        $ch_set = $this->object->setDefaultChannel($ch);
+        $ch = $this->connection->getChannel();
+        $ch_set = $this->connection->setDefaultChannel($ch);
 
         $this->assertSame($ch, $ch_set);
-        $this->assertSame($ch, $this->object->getDefaultChannel());
+        $this->assertSame($ch, $this->connection->getDefaultChannel());
     }
 
     /**
      * @covers AMQPy\Connection::setDefaultChannel
      */
     public function testSetDefaultChannelExplicit() {
-        $ch = $this->object->setDefaultChannel();
+        $ch = $this->connection->setDefaultChannel();
 
         $this->assertInstanceOf('\AMQPy\Channel', $ch);
-        $this->assertSame($ch, $this->object->getDefaultChannel());
+        $this->assertSame($ch, $this->connection->getDefaultChannel());
     }
 
     /**
@@ -97,9 +98,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
      */
     public function testSetDefaultChannelFromOtherConnection() {
         $cnn = new Connection();
-        $this->assertNotSame($cnn, $this->object);
+        $this->assertNotSame($cnn, $this->connection);
 
-        $this->object->setDefaultChannel($cnn->getChannel());
+        $this->connection->setDefaultChannel($cnn->getChannel());
     }
 }
 
