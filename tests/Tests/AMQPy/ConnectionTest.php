@@ -6,7 +6,11 @@
 
 namespace Tests\AMQPy;
 
+
 use \AMQPy\Connection;
+use \AMQPy\Serializers\PhpNative;
+
+use \AMQPExchangeException;
 
 
 /**
@@ -73,7 +77,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
      * @covers AMQPy\Connection::setDefaultChannel
      */
     public function testSetDefaultChannelImplicit() {
-        $ch = $this->connection->getChannel();
+        $ch     = $this->connection->getChannel();
         $ch_set = $this->connection->setDefaultChannel($ch);
 
         $this->assertSame($ch, $ch_set);
@@ -93,8 +97,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Connection::setDefaultChannel
      *
-     *  @expectedException \AMQPConnectionException
-     *  @expectedExceptionMessage Channel does not belong to this connection
+     * @expectedException \AMQPConnectionException
+     * @expectedExceptionMessage Channel does not belong to this connection
      */
     public function testSetDefaultChannelFromOtherConnection() {
         $cnn = new Connection();
@@ -102,5 +106,38 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
 
         $this->connection->setDefaultChannel($cnn->getChannel());
     }
+
+    /**
+     * @covers AMQPy\Connection::getExchange
+     * @covers AMQPy\Exchange::getSerializer
+     * @covers AMQPy\Exchange::getConnection
+     */
+    public function testGetExchange() {
+        $name = 'test.exchange.' . microtime(true);
+        $type = AMQP_EX_TYPE_FANOUT;
+        $serializer = new PhpNative();
+        $flags = AMQP_DURABLE | AMQP_AUTODELETE;
+        $args = array('alternate-exchange' => 'amq.fanout');
+
+        $ex = $this->connection->getExchange($name, $type, $serializer, $flags, $args);
+
+        try {
+            $this->connection->getExchange($name, $type, AMQP_EX_TYPE_TOPIC, $flags, $args);
+        } catch (AMQPExchangeException $e) {
+            $this->assertStringMatchesFormat("%sPRECONDITION_FAILED - cannot redeclare exchange%s", $e->getMessage());
+
+        }
+
+        $this->assertSame($name, $ex->getName());
+        $this->assertSame($type, $ex->getType());
+        $this->assertSame($flags, $ex->getFlags());
+        $this->assertSame($args, $ex->getArguments());
+
+        $this->assertSame($serializer, $ex->getSerializer());
+        $this->assertSame($this->connection->getDefaultChannel(), $ex->getChannel());
+
+    }
+
+
 }
 

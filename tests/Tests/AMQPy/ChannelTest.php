@@ -50,7 +50,7 @@ class ChannelTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @covers AMQPy\Connection::getConnection
+     * @covers AMQPy\Connection::getDefaultChannel
      */
     public function testGetDefaultChannel() {
         $chn = new Channel($this->connection);

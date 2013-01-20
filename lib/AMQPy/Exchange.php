@@ -35,9 +35,9 @@ class Exchange extends AMQPExchange {
 
     public function __construct(Channel $amqp_channel, ISerializer $serializer) {
         parent::__construct($amqp_channel);
-        $this->serializer = $serializer;
 
-        $this->channel = $amqp_channel;
+        $this->serializer = $serializer;
+        $this->channel    = $amqp_channel;
     }
 
     /**
@@ -73,6 +73,8 @@ class Exchange extends AMQPExchange {
         $attributes['content_type'] = $this->serializer->getContentType();
 
         if (!parent::publish($message, $routing_key, $flags, $attributes)) {
+            // TODO: fix publish php-amqp method to return false when it should
+            // (see https://github.com/pdezwart/php-amqp/issues/23)
             throw new AMQPExchangeException('Failed to send message');
         }
     }

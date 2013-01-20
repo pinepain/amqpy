@@ -34,7 +34,11 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
         $closure = function () {
         };
 
-        $warn = array('PHPUnit_Framework_Error_Warning', 'json_encode(): type is unsupported, encoded as null');
+        if (PHP_MAJOR_VERSION > 4 && PHP_MINOR_VERSION > 4) {
+            $warn = array('Exceptions\AMQPy\SerializerException', 'Failed to serialize value: Unknown error');
+        } else {
+            $warn = array('PHPUnit_Framework_Error_Warning', 'json_encode(): type is unsupported, encoded as null');
+        }
 
         $f1 = fopen(__FILE__, 'r');
         $f2 = fopen(__FILE__, 'r');
@@ -68,7 +72,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function dataProviderParse() {
-        $err   = array("\\Exceptions\\AMQPy\\SerializerException", "Failed to parse value: Syntax error, malformed JSON");
+        $err = array("\\Exceptions\\AMQPy\\SerializerException", "Failed to parse value: Syntax error, malformed JSON");
 
         $closure = function () {
         };
@@ -113,7 +117,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider dataProviderSerialize
      *
      */
-    public function testSerialize($value, $error, $output, $warning=null) {
+    public function testSerialize($value, $error, $output, $warning = null) {
         if (!empty($warning)) {
             $this->setExpectedException($warning[0], $warning[1]);
         }
