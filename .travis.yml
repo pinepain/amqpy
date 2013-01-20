@@ -6,17 +6,24 @@ php:
   - "5.3"
   - "5.2"
 
-script: phpunit --coverage-text --configuration ./tests/phpunit.xml
+env:
+  - NO_INTERACTION=1 TEST_TIMEOUT=120 LIBRABBITMQ_VERSION=master
+  - PHP_AMQP_VERSION=master
+
+services:
+  rabbitmq
 
 before_script:
-  # amqpy_user:amqpy_password has full access to amqpy_vhost
-#  - sudo rabbitmqctl add_vhost amqpy_vhost
-#  - sudo rabbitmqctl add_user amqpy_user amqpy_password
-#  - sudo rabbitmqctl set_permissions -p amqpy_vhost amqpy_user ".*" ".*" ".*"
-
+  # install librabbitmq C library (required by php-amqp)
+  - sh -c "git clone git://github.com/alanxz/rabbitmq-c.git"
+  - sh -c "cd rabbitmq-c && git checkout ${LIBRABBITMQ_VERSION}"
+  - sh -c "cd rabbitmq-c && autoreconf -i && ./configure && make && sudo make install"
+  # install php-amqp extension
+  - sh -c "git clone git://github.com/pdezwart/php-amqp.git"
+  - sh -c "cd php-amqp && git checkout ${PHP_AMQP_VERSION}"
+  - sh -c "cd php-amqp && phpize && ./configure && make && sudo make install"
   # get PSR-0 autoloader
   - curl -s http://getcomposer.org/installer | php --
   - php composer.phar --dev install
 
-services:
-  rabbitmq
+script: phpunit --coverage-text --configuration ./tests/phpunit.xml
