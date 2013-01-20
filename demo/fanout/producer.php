@@ -4,27 +4,13 @@
  * @created 12/24/12 8:16 PM
  */
 
-include (dirname(__FILE__) . '/../config.php');
+include 'bootstrap.php';
 
 
 use AMQPy\Solutions\Generic;
 
 
 class EchoProducer {
-    public $types = array(
-        'object',
-        'array',
-        'resource',
-        'string',
-        'integer',
-        'float',
-        'true',
-        'false',
-        'null',
-        'zero',
-        'emptystr',
-    );
-
     public function getObject() {
         $obj           = new StdClass;
         $obj->datetime = new DateTime();
@@ -79,11 +65,15 @@ class EchoProducer {
 $exchange = new Generic('example.fanout', $config);
 $producer = new EchoProducer();
 
-$count = 0;
+$methods = get_class_methods($producer);
+$count   = 0;
+
 while (true) {
-    $method = 'get' . ucfirst($producer->types[array_rand($producer->types)]);
+
+    $method = $methods[array_rand($methods)];
 
     $exchange->send($producer->$method());
+
     echo "Sent message #{$count} ({$method})" . PHP_EOL;
 
     $count++;

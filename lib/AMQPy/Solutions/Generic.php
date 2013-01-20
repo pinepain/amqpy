@@ -48,7 +48,7 @@ class Generic {
         $this->connection = new Connection($_s['credentials']);
 
         if (isset($settings['prefetch'])) {
-            $this->connection->getChannel()->setPrefetchCount($_s['prefetch']);
+            $this->connection->getDefaultChannel()->setPrefetchCount($_s['prefetch']);
         }
 
         if (!class_exists($_e['serializer'])) {

@@ -11,7 +11,6 @@ namespace AMQPy;
 
 
 use \AMQPExchange;
-use \AMQPChannel;
 use \AMQPExchangeException;
 
 
@@ -34,7 +33,7 @@ class Exchange extends AMQPExchange {
         return $this->serializer;
     }
 
-    public function __construct(AMQPChannel $amqp_channel, ISerializer $serializer) {
+    public function __construct(Channel $amqp_channel, ISerializer $serializer) {
         parent::__construct($amqp_channel);
         $this->serializer = $serializer;
 

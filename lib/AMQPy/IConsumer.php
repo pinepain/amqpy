@@ -19,22 +19,18 @@ interface IConsumer {
      *
      * Use it to make some additional bindings or other consume-specific actions
      *
-     * @param Queue $queue Queue on which consumer will be listening for new messages
-     *
      * @return mixed | bool Return FALSE to break consuming (post-hook will not be called in this case)
      */
-    public function preConsume(Queue $queue);
+    public function preConsume();
 
     /**
      * Post-consume hook
      *
      * Use it to cleanup after consuming
      *
-     * @param Queue $queue Queue on which consumer was listening for new messages
-     *
      * @return mixed
      */
-    public function postConsume(Queue $queue);
+    public function postConsume();
 
     /**
      * Process received data from queued message.

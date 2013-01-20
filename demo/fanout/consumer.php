@@ -4,8 +4,7 @@
  * @created 12/24/12 8:16 PM
  */
 
-include (dirname(__FILE__) . '/../config.php');
-
+include 'bootstrap.php';
 
 use AMQPy\IConsumer;
 use AMQPy\Queue;
@@ -19,11 +18,10 @@ class EchoConsumer implements IConsumer {
         return $this->counter++;
     }
 
-
     public function consume($payload, AMQPEnvelope $envelope, Queue $queue) {
 
-        if (rand(0, 100) > 75) {
-            // throw exception with probability 0.25
+        if (rand(0, 100) > 90) {
+            // throw exception with probability 0.1
             throw new Exception('Random exception');
         }
 
@@ -35,9 +33,12 @@ class EchoConsumer implements IConsumer {
     }
 
     public function preConsume(Queue $queue) {
+        echo "Method ", __METHOD__, " called before consuming", PHP_EOL;
     }
 
     public function postConsume(Queue $queue) {
+        echo "Method ", __METHOD__, " called after consuming", PHP_EOL;
+        $queue->cancel(); // stop consumer to receive envelopes from server
     }
 }
 

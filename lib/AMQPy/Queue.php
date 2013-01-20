@@ -10,7 +10,6 @@
 namespace AMQPy;
 
 use \AMQPQueue;
-use \AMQPChannel;
 use \AMQPEnvelope;
 use \Exception;
 
@@ -23,13 +22,24 @@ class Queue extends AMQPQueue {
      */
     private $serializer = null;
 
+    /**
+     * @var AMQPChannel
+     */
+    private $channel = null;
+
+    public function getChannel() {
+        return $this->channel;
+    }
+
     public function getSerializer() {
         return $this->serializer;
     }
 
-    public function __construct(AMQPChannel $amqp_channel, ISerializer $serializer) {
+    public function __construct(Channel $amqp_channel, ISerializer $serializer) {
         parent::__construct($amqp_channel);
+
         $this->serializer = $serializer;
+        $this->channel    = $amqp_channel;
     }
 
     /**
@@ -43,9 +53,13 @@ class Queue extends AMQPQueue {
      * @throws SerializerException
      */
     public function listen(IConsumer $consumer, $flags = AMQP_NOPARAM) {
+        // Do not catch exceptions from Queue::listen to prevent your app from
+        // failing. If something bad happens here in most cases it's quite
+        // critical problem or crappy code.
+
         $serializer = $this->getSerializer();
 
-        if (false === $consumer->postConsume($this)) {
+        if (false === $consumer->preConsume()) {
             return null;
         }
 
@@ -63,7 +77,13 @@ class Queue extends AMQPQueue {
             }
         }, $flags);
 
-        return $consumer->postConsume($this);
+        // yupp, if IConsumer::except throw some exception Queue::postConsumer
+        // will not run, but generally if even exception handler fails something
+        // really goes wrong and it's good idea to do not try to keep app running
+        // and bring it down. I'm not talking about that architectures where
+        // thrown exceptions is another way to return result. Please don't do
+        // that, at least not in PHP.
+        return $consumer->postConsume();
     }
 
     public function received(AMQPEnvelope $envelope) {
