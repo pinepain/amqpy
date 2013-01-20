@@ -125,7 +125,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
             $this->connection->getExchange($name, $type, AMQP_EX_TYPE_TOPIC, $flags, $args);
         } catch (AMQPExchangeException $e) {
             $this->assertStringMatchesFormat("%sPRECONDITION_FAILED - cannot redeclare exchange%s", $e->getMessage());
-
         }
 
         $this->assertSame($name, $ex->getName());
