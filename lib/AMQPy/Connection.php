@@ -8,7 +8,6 @@
  */
 namespace AMQPy;
 
-use \AMQPChannel;
 use \AMQPConnection;
 
 use \AMQPException;
@@ -17,49 +16,44 @@ use \AMQPConnectionException;
 
 class Connection extends AMQPConnection {
     /**
-     * @var AMQPChannel default channel
+     * @var Channel default channel
      *
      * Actually, due to single-thread nature of PHP we don't need more than one
      * channel per connection in most cases.
      */
-    private $channel;
+    private $default_channel;
 
     /**
      * Creates an AMQPConnection instance representing a connection to an AMQP broker and immediately connect to broker
      *
-     * The credentials is an optional array of credential information for connecting to the AMQP broker.
-     * $credentials = array(
-     *  'host'     => amqp.host     The host to connect too. Note: Max 1024 characters.
-     *  'port'     => amqp.port     Port on the host.
-     *  'vhost'    => amqp.vhost    The virtual host on the host. Note: Max 128 characters.
-     *  'login'    => amqp.login    The login name to use. Note: Max 128 characters.
-     *  'password' => amqp.password Password. Note: Max 128 characters.
-     *  'timeout'  => amqp.timeout   NOTE: non-documented. Amount of time, in seconds (may be float), after which this instance of an AMQPConnection object times out a request to the broker.
-     * )
+     * @param array $credentials Information for connecting to the AMQP broker.
+     * @param bool  $connect Should
      *
      * All the other keys are ignored.
      * Note: A connection will not be established until AMQPConnection::connect() is called.
-     *
-     * @param array $credentials
-     *
-     * @throws AMQPException Throws an exception on parameter parsing failures, and option errors.
-     * @throws AMQPConnectionException Thorws an exception on connection establishing with the AMQP broker failure.
      */
-    public function __construct(array $credentials = array()) {
+    public function __construct(array $credentials = array(), $connect = true) {
         parent::__construct($credentials);
 
-        $connected = $this->connect();
-        if (!$connected) {
-            throw new AMQPConnectionException('Failed to establish connection with the AMQP broker');
+        if ($connect) {
+            $this->connect();
         }
     }
 
-    public function getChannel() {
-        if (null === $this->channel) {
-            $this->channel = new AMQPChannel($this);
+    public function getDefaultChannel() {
+        if (null === $this->default_channel) {
+            $this->renewDefaultChannel();
         }
 
-        return $this->channel;
+        return $this->default_channel;
+    }
+
+    public function renewDefaultChannel() {
+        $this->default_channel = $this->getChannel();
+    }
+
+    public function getChannel() {
+        return new Channel($this);
     }
 
     /**
@@ -72,7 +66,7 @@ class Connection extends AMQPConnection {
      * @return Exchange A new instance of an Exchange object, associated with this channel.
      */
     public function getExchange($name, $type, ISerializer $serializer, $flags = null, array $args = array()) {
-        $exchange = new Exchange($this->getChannel(), $serializer);
+        $exchange = new Exchange($this->getDefaultChannel(), $serializer);
 
         $exchange->setName($name);
         $exchange->setType($type);
