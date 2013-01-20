@@ -42,14 +42,22 @@ class Connection extends AMQPConnection {
 
     public function getDefaultChannel() {
         if (null === $this->default_channel) {
-            $this->renewDefaultChannel();
+            $this->setDefaultChannel();
         }
 
         return $this->default_channel;
     }
 
-    public function renewDefaultChannel() {
-        $this->default_channel = $this->getChannel();
+    public function setDefaultChannel(Channel $channel=null) {
+        if ($channel) {
+            if ($channel->getConnection() !== $this) {
+                throw new AMQPConnectionException("Channel does not belong to this connection");
+            }
+        } else {
+            $channel = $this->getChannel();
+        }
+
+        return $this->default_channel = $channel;
     }
 
     public function getChannel() {

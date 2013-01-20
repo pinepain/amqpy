@@ -54,7 +54,6 @@ class ChannelTest extends \PHPUnit_Framework_TestCase {
     public function testGetDefaultChannel() {
         $chn = new Channel($this->connection);
         $this->assertSame($this->connection, $chn->getConnection());
-
     }
 
 

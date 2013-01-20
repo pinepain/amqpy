@@ -2,13 +2,13 @@ language: php
 
 php:
   - "5.5"
-  - "5.4"
-  - "5.3"
-  - "5.2"
+#  - "5.4"
+#  - "5.3"
+#  - "5.2"
 
 env:
   # stable
-  - NO_INTERACTION=1 TEST_TIMEOUT=120 LIBRABBITMQ_VERSION="rabbitmq-c-v0.3.0" PHP_AMQP_VERSION="v1.0.9"
+#  - NO_INTERACTION=1 TEST_TIMEOUT=120 LIBRABBITMQ_VERSION="rabbitmq-c-v0.3.0" PHP_AMQP_VERSION="v1.0.9"
   # master
   - NO_INTERACTION=1 TEST_TIMEOUT=120 LIBRABBITMQ_VERSION=master PHP_AMQP_VERSION=master
 
@@ -25,9 +25,13 @@ before_script:
   - sh -c "git clone git://github.com/pdezwart/php-amqp.git"
   - sh -c "cd php-amqp && git checkout ${PHP_AMQP_VERSION}"
   - sh -c "cd php-amqp && phpize && ./configure && make && sudo make install"
-  - sh -c "phpenv config-add tests/travis/custom.ini"
+  # add amqp extension to php.ini
+  - sh -c "echo \"extension=memcache.so\" >> `php --ini | grep \"Loaded Configuration\" | sed -e \"s|.*:\s*||\"`"
   # get PSR-0 autoloader
   - sh -c "curl -s http://getcomposer.org/installer | php --"
   - sh -c "php composer.phar --dev install"
 
 script: phpunit --coverage-text --configuration ./tests/phpunit.xml
+
+notify:
+  - email
