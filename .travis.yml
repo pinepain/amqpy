@@ -25,8 +25,9 @@ before_script:
   - sh -c "git clone git://github.com/pdezwart/php-amqp.git"
   - sh -c "cd php-amqp && git checkout ${PHP_AMQP_VERSION}"
   - sh -c "cd php-amqp && phpize && ./configure && make && sudo make install"
+  - sh -c "phpenv config-add tests/travis/custom.ini"
   # get PSR-0 autoloader
-  - curl -s http://getcomposer.org/installer | php --
-  - php composer.phar install
+  - sh -c "curl -s http://getcomposer.org/installer | php --"
+  - sh -c "php composer.phar --dev install"
 
 script: phpunit --coverage-text --configuration ./tests/phpunit.xml
