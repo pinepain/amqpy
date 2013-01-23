@@ -138,6 +138,8 @@ class Generic {
                 $_s['flags'],
                 isset($_s['args']) ? $_s['args'] : array()
             );
+            
+            $this->settings['exchanges']['queues'][$name] = $_s;
         }
 
         return $this->queues[$name];
