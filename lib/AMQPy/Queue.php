@@ -75,6 +75,8 @@ class Queue extends AMQPQueue {
             } catch (Exception $e) {
                 return $consumer->except($e, $envelope, $queue);
             }
+            // TODO(pba): add finally keyword support
+
         }, $flags);
 
         // yupp, if IConsumer::except throw some exception Queue::postConsumer

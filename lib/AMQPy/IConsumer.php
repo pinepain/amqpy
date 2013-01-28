@@ -56,4 +56,7 @@ interface IConsumer {
      * @return mixed | boolean Return FALSE to break the consumption event loop
      */
     public function except(Exception $e, AMQPEnvelope $envelope, Queue $queue);
+
+
+//    public function finally($payload, AMQPEnvelope $envelope, Queue $queue, Exception $e=null);
 }
