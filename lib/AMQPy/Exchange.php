@@ -21,7 +21,7 @@ class Exchange extends AMQPExchange {
     private $serializer = null;
 
     /**
-     * @var AMQPChannel
+     * @var Channel
      */
     private $channel = null;
 

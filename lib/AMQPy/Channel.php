@@ -4,7 +4,7 @@
  * @created 1/20/13 @ 7:25 PM
  */
 
-namespace AMQPY;
+namespace AMQPy;
 
 
 use \AMQPChannel;

@@ -7,31 +7,13 @@
  * file that was distributed with this source code.
  */
 
-namespace AMQPY;
+namespace AMQPy;
 
 use \AMQPEnvelope;
 use \Exception;
 
 
 interface IConsumer {
-    /**
-     * Pre-consume hook
-     *
-     * Use it to make some additional bindings or other consume-specific actions
-     *
-     * @return mixed | bool Return FALSE to break consuming (post-hook will not be called in this case)
-     */
-    public function preConsume();
-
-    /**
-     * Post-consume hook
-     *
-     * Use it to cleanup after consuming
-     *
-     * @return mixed
-     */
-    public function postConsume();
-
     /**
      * Process received data from queued message.
      *
@@ -43,9 +25,6 @@ interface IConsumer {
      */
     public function consume($payload, AMQPEnvelope $envelope, Queue $queue);
 
-
-
-
     /**
      * Handle any exception during queued message data processing.
      *
@@ -56,7 +35,4 @@ interface IConsumer {
      * @return mixed | boolean Return FALSE to break the consumption event loop
      */
     public function except(Exception $e, AMQPEnvelope $envelope, Queue $queue);
-
-
-//    public function finally($payload, AMQPEnvelope $envelope, Queue $queue, Exception $e=null);
 }

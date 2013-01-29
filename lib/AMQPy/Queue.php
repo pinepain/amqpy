@@ -13,6 +13,10 @@ use \AMQPQueue;
 use \AMQPEnvelope;
 use \Exception;
 
+
+use AMQPy\Hooks\IPostConsumer;
+use AMQPy\Hooks\IPreConsumer;
+
 use \Exceptions\AMQPy\SerializerException;
 
 
@@ -23,7 +27,7 @@ class Queue extends AMQPQueue {
     private $serializer = null;
 
     /**
-     * @var AMQPChannel
+     * @var Channel
      */
     private $channel = null;
 
@@ -51,6 +55,7 @@ class Queue extends AMQPQueue {
      * @return mixed
      *
      * @throws SerializerException
+     * @throws Exception           Any exception from pre/post-consume handlers and from exception handler
      */
     public function listen(IConsumer $consumer, $flags = AMQP_NOPARAM) {
         // Do not catch exceptions from Queue::listen to prevent your app from
@@ -59,11 +64,14 @@ class Queue extends AMQPQueue {
 
         $serializer = $this->getSerializer();
 
-        if (false === $consumer->preConsume()) {
-            return null;
-        }
-
         $this->consume(function (AMQPEnvelope $envelope, Queue $queue) use ($consumer, $serializer) {
+            if ($consumer instanceof IPreConsumer) {
+                $consumer->preConsume($envelope, $queue);
+            }
+
+            $ret = null;
+            $err = null;
+
             try {
                 if ($envelope->getContentType() !== $serializer->getContentType()) {
                     throw new SerializerException('Content type mismatch');
@@ -71,21 +79,26 @@ class Queue extends AMQPQueue {
 
                 $payload = $serializer->parse($envelope->getBody());
 
-                return $consumer->consume($payload, $envelope, $queue);
+                $ret = $consumer->consume($payload, $envelope, $queue);
             } catch (Exception $e) {
-                return $consumer->except($e, $envelope, $queue);
+                try {
+                    $ret = $consumer->except($e, $envelope, $queue);
+                } catch (Exception $e) {
+                    $err = $e;
+                }
             }
-            // TODO(pba): add finally keyword support
+
+            if ($consumer instanceof IPostConsumer) {
+                $consumer->postConsume($envelope, $queue);
+            }
+
+            if ($err) {
+                throw $err;
+            }
+
+            return $ret;
 
         }, $flags);
-
-        // yupp, if IConsumer::except throw some exception Queue::postConsumer
-        // will not run, but generally if even exception handler fails something
-        // really goes wrong and it's good idea to do not try to keep app running
-        // and bring it down. I'm not talking about that architectures where
-        // thrown exceptions is another way to return result. Please don't do
-        // that, at least not in PHP.
-        return $consumer->postConsume();
     }
 
     public function received(AMQPEnvelope $envelope) {

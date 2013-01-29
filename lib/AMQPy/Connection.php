@@ -10,7 +10,6 @@ namespace AMQPy;
 
 use \AMQPConnection;
 
-use \AMQPException;
 use \AMQPConnectionException;
 
 
