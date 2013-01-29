@@ -130,7 +130,7 @@ class Generic {
                 $_s['consumer_flags'] = AMQP_NOPARAM;
             }
 
-            $this->consumer_flags[$name] = $settings['consumer_flags'];
+            $this->consumer_flags[$name] = $_s['consumer_flags'];
 
             $this->queues[$name] = $this->exchange->getQueue(
                 $name,
