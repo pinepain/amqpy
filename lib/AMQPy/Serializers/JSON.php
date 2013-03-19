@@ -12,7 +12,7 @@ namespace AMQPy\Serializers;
 
 use AMQPy\ISerializer;
 
-use \Exceptions\AMQPy\SerializerException;
+use \AMQPy\Exceptions\SerializerException;
 
 
 class JSON implements ISerializer {

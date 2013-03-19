@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Exceptions\AMQPy;
+namespace AMQPy\Exceptions;
 
 use \Exception;
 

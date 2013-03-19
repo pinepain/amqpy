@@ -72,7 +72,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function dataProviderParse() {
-        $err = array("\\Exceptions\\AMQPy\\SerializerException", "Failed to parse value: Syntax error, malformed JSON");
+        $err = array("\\AMQPy\\Exceptions\\SerializerException", "Failed to parse value: Syntax error, malformed JSON");
 
         $closure = function () {
         };

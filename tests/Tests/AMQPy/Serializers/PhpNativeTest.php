@@ -67,8 +67,8 @@ class PhpNativeTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function dataProviderParse() {
-        $err   = array("\\Exceptions\\AMQPy\\SerializerException", "Failed to parse value: String is not unserializeable");
-        $err_2 = array("\\Exceptions\\AMQPy\\SerializerException", "Failed to parse value: Incompatible type");
+        $err   = array("\\AMQPy\\Exceptions\\SerializerException", "Failed to parse value: String is not unserializeable");
+        $err_2 = array("\\AMQPy\\Exceptions\\SerializerException", "Failed to parse value: Incompatible type");
 
         $closure = function () {
         };

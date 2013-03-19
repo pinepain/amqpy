@@ -10,7 +10,7 @@
 namespace AMQPy;
 
 
-use \Exceptions\AMQPy\SerializerException;
+use \AMQPy\Exceptions\SerializerException;
 
 
 interface ISerializer {

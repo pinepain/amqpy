@@ -34,7 +34,7 @@ class PlainTextTest extends PHPUnit_Framework_TestCase {
     }
 
     public function dataProviderSerialize() {
-        $err     = array("\\Exceptions\\AMQPy\\SerializerException", "Failed to serialize value: Incompatible type");
+        $err     = array("\\AMQPy\\Exceptions\\SerializerException", "Failed to serialize value: Incompatible type");
         $closure = function () {
         };
 
@@ -64,7 +64,7 @@ class PlainTextTest extends PHPUnit_Framework_TestCase {
     }
 
     public function dataProviderParse() {
-        $err     = array("\\Exceptions\\AMQPy\\SerializerException", "Failed to parse value: Incompatible type");
+        $err     = array("\\AMQPy\\Exceptions\\SerializerException", "Failed to parse value: Incompatible type");
         $closure = function () {
         };
 

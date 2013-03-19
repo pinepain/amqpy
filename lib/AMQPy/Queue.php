@@ -17,7 +17,7 @@ use \Exception;
 use AMQPy\Hooks\IPostConsumer;
 use AMQPy\Hooks\IPreConsumer;
 
-use \Exceptions\AMQPy\SerializerException;
+use \AMQPy\Exceptions\SerializerException;
 
 
 class Queue extends AMQPQueue {
