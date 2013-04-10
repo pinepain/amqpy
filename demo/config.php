@@ -10,9 +10,8 @@ $config = array(
         'write_timeout' => 1,
         'read_timeout'  => 0,
     ),
-
     'exchanges'   => array(
-        'example.fanout'        => array(
+        'example.fanout' => array(
             'type'       => AMQP_EX_TYPE_FANOUT, // send messages to all queues
             'flags'      => AMQP_DURABLE, // as for now we use only persistent exchanges and queues
             'serializer' => '\\AMQPy\\Serializers\\PhpNative',
@@ -24,7 +23,6 @@ $config = array(
                     'expiration' => 5000, // microseconds, how long messages should be stored before deleted
                 ),
             ),
-
             'queues'     => array(
                 'example.fanout.default' => array(
                     'flags'          => AMQP_DURABLE,

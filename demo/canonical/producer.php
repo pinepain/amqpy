@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @created 12/24/12 8:16 PM
  */
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @created 1/19/13 @ 9:37 PM
  */
 
@@ -22,7 +22,6 @@ $config = array(
                 'expiration' => 5000, // microseconds, how long messages should be stored before deleted
             ),
         ),
-
         'queues'     => array(
             'example.fanout.default' => array(
                 'flags'          => AMQP_DURABLE,

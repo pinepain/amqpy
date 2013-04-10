@@ -1,27 +1,29 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @created 12/24/12 8:16 PM
  */
-
-include (dirname(__FILE__) . '/../../init_web.php');
-include (dirname(__FILE__) . '/../config.php');
-
 
 use AMQPy\IConsumer;
 use AMQPy\Queue;
 use AMQPy\Solutions\Generic;
 
+include (dirname(__FILE__) . '/../../init_web.php');
+include (dirname(__FILE__) . '/../config.php');
 
-class DemoReceiver implements IConsumer {
+
+class DemoReceiver implements IConsumer
+{
     private $counter = 0;
     private $radio_station;
 
-    private function count() {
+    private function count()
+    {
         return $this->counter++;
     }
 
-    public function __construct() {
+    public function __construct()
+    {
         $available_channels = array(
             'europe',
             'africa',
@@ -39,11 +41,13 @@ class DemoReceiver implements IConsumer {
         echo "Receiver listen to {$this->radio_station} radio station", PHP_EOL;
     }
 
-    public function getRadioStation() {
+    public function getRadioStation()
+    {
         return $this->radio_station;
     }
 
-    public function consume($payload, AMQPEnvelope $envelope, Queue $queue) {
+    public function consume($payload, AMQPEnvelope $envelope, Queue $queue)
+    {
 
         if (rand(0, 100) > 95) {
             throw new Exception('some atmospheric disturbances');
@@ -53,17 +57,22 @@ class DemoReceiver implements IConsumer {
             throw new Exception('low audio quality');
         }
 
-        echo "Received forecast #{$this->count()} from {$this->getRadioStation()} radio station: {$payload}, route key({$envelope->getRoutingKey()})", PHP_EOL;
+        echo "Received forecast #{$this->count()} from {$this->getRadioStation(
+        )} radio station: {$payload}, route key({$envelope->getRoutingKey()})", PHP_EOL;
     }
 
-    public function except(Exception $e, AMQPEnvelope $envelope, Queue $queue) {
-        echo "Failed to receive forecast #{$this->count()} from {$this->getRadioStation()} radio station due to {$e->getMessage()}", PHP_EOL;
+    public function except(Exception $e, AMQPEnvelope $envelope, Queue $queue)
+    {
+        echo "Failed to receive forecast #{$this->count()} from {$this->getRadioStation(
+        )} radio station due to {$e->getMessage()}", PHP_EOL;
     }
 
-    public function preConsume(Queue $queue) {
+    public function preConsume(Queue $queue)
+    {
     }
 
-    public function postConsume(Queue $queue) {
+    public function postConsume(Queue $queue)
+    {
     }
 }
 

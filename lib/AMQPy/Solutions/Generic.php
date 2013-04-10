@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @url https://github.com/pinepain/amqpy
  *
  * For the full copyright and license information, please view the LICENSE
@@ -9,14 +9,13 @@
 
 namespace AMQPy\Solutions;
 
+use AMQPException;
 use AMQPy\Connection;
-use AMQPy\Queue;
 use AMQPy\IConsumer;
+use AMQPy\Queue;
 
-use \AMQPException;
-
-
-class Generic {
+class Generic
+{
     private $settings = array();
 
     private $connection;
@@ -29,11 +28,12 @@ class Generic {
      * Establish connection to broker, create exchange and queues if they was not created and bind queues to exchange
      *
      * @param string $exchange Exchange name
-     * @param array  $settings Entry point settings
+     * @param array $settings Entry point settings
      *
      * @throws AMQPException When serializer given in config does not exists
      */
-    public function __construct($exchange, array $settings) {
+    public function __construct($exchange, array $settings)
+    {
         $_s = $settings;
         $_e = $settings['exchanges'][$exchange];
 
@@ -42,7 +42,7 @@ class Generic {
         }
 
         $_s['exchanges'] = $_e;
-        $this->settings = $_s;
+        $this->settings  = $_s;
 
         // establish connection
         $this->connection = new Connection($_s['credentials']);
@@ -55,11 +55,12 @@ class Generic {
             throw new AMQPException('Serializer does not exists');
         }
 
-        $this->exchange = $this->connection->getExchange($exchange,
-                                                         $_e['type'],
-                                                         new $_e['serializer'],
-                                                         $_e['flags'],
-                                                         isset($_e['args']) ? $_e['args'] : array()
+        $this->exchange = $this->connection->getExchange(
+            $exchange,
+            $_e['type'],
+            new $_e['serializer'],
+            $_e['flags'],
+            isset($_e['args']) ? $_e['args'] : array()
         );
 
         // force init queues associated with this exchange
@@ -72,11 +73,12 @@ class Generic {
      * Send message to exchange
      *
      * @param mixed $message     Message data to send.
-     * @param null  $routing_key Routing key to deliver message. Ignored for 'fanout' exchanges.
+     * @param null $routing_key Routing key to deliver message. Ignored for 'fanout' exchanges.
      *                           If none given default will be used
      */
-    public function send($message, $routing_key = null) {
-        $_m = $this->settings['exchanges']['messages'];
+    public function send($message, $routing_key = null)
+    {
+        $_m    = $this->settings['exchanges']['messages'];
         $attrs = $_m['attributes'];
 
         // route-specific messages settings
@@ -91,11 +93,12 @@ class Generic {
      * Attach consumer to process payload from queue
      *
      * @param IConsumer $consumer Consumer to process payload and handle possible errors
-     * @param string    $queue    Queue name to attach consumer to;
+     * @param string $queue    Queue name to attach consumer to;
      *
      * @return mixed
      */
-    public function listen(IConsumer $consumer, $queue) {
+    public function listen(IConsumer $consumer, $queue)
+    {
         $q  = $this->getQueue($queue);
         $_q = $this->settings['exchanges']['queues'][$queue];
 
@@ -110,7 +113,8 @@ class Generic {
      * @return Queue
      * @throws AMQPException When queue not found or could not been initialized
      */
-    public function getQueue($name) {
+    public function getQueue($name)
+    {
         if (!isset($this->queues[$name])) {
 
             $_q = $this->settings['exchanges']['queues'];
@@ -138,7 +142,7 @@ class Generic {
                 $_s['flags'],
                 isset($_s['args']) ? $_s['args'] : array()
             );
-            
+
             $this->settings['exchanges']['queues'][$name] = $_s;
         }
 
@@ -146,15 +150,18 @@ class Generic {
     }
 
 
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->connection;
     }
 
-    public function getExchange() {
+    public function getExchange()
+    {
         return $this->exchange;
     }
 
-    public function getQueues() {
+    public function getQueues()
+    {
         return $this->queues;
     }
 }

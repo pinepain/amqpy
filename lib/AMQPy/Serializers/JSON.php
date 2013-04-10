@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @url https://github.com/pinepain/amqpy
  *
  * For the full copyright and license information, please view the LICENSE
@@ -9,13 +9,11 @@
 
 namespace AMQPy\Serializers;
 
-
 use AMQPy\ISerializer;
+use AMQPy\Serializers\Exceptions\SerializerException;
 
-use \AMQPy\Exceptions\SerializerException;
-
-
-class JSON implements ISerializer {
+class JSON implements ISerializer
+{
     const MIME = 'application/json';
 
     const JSON_UNKNOWN_ERROR = 'Unknown error';
@@ -29,8 +27,9 @@ class JSON implements ISerializer {
         JSON_ERROR_UTF8           => 'Malformed UTF-8 characters, possibly incorrectly encoded',
     );
 
-    public function serialize($value) {
-        $value = json_encode($value);// shut up but then throw an exception
+    public function serialize($value)
+    {
+        $value = json_encode($value); // shut up but then throw an exception
 
         if ($this->isErrorOccurred()) {
             throw new SerializerException("Failed to serialize value: " . $this->getLastError());
@@ -39,7 +38,8 @@ class JSON implements ISerializer {
         return $value;
     }
 
-    public function parse($string, $assoc = true) {
+    public function parse($string, $assoc = true)
+    {
         $value = json_decode($string, $assoc);
 
         if ($this->isErrorOccurred()) {
@@ -48,16 +48,19 @@ class JSON implements ISerializer {
         return $value;
     }
 
-    public function getContentType() {
+    public function getContentType()
+    {
         return self::MIME;
     }
 
 
-    private function isErrorOccurred() {
+    private function isErrorOccurred()
+    {
         return JSON_ERROR_NONE !== json_last_error();
     }
 
-    private function getLastError() {
+    private function getLastError()
+    {
         $error_code = json_last_error();
 
         if (isset(self::$errors[$error_code])) {

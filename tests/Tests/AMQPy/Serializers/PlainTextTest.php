@@ -1,18 +1,17 @@
 <?php
 namespace Tests\AMQPy\Serializers;
 
-use \PHPUnit_Framework_TestCase;
-
-use \Exception;
-use \StdClass;
-
-use \AMQPy\Serializers\PlainText;
+use AMQPy\Serializers\PlainText;
+use Exception;
+use PHPUnit_Framework_TestCase;
+use StdClass;
 
 
 /**
  * @group serializers
  */
-class PlainTextTest extends PHPUnit_Framework_TestCase {
+class PlainTextTest extends PHPUnit_Framework_TestCase
+{
     /**
      * @var PlainText
      */
@@ -22,7 +21,8 @@ class PlainTextTest extends PHPUnit_Framework_TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->object = new PlainText;
     }
 
@@ -30,11 +30,16 @@ class PlainTextTest extends PHPUnit_Framework_TestCase {
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
      */
-    protected function tearDown() {
+    protected function tearDown()
+    {
     }
 
-    public function dataProviderSerialize() {
-        $err     = array("\\AMQPy\\Exceptions\\SerializerException", "Failed to serialize value: Incompatible type");
+    public function dataProviderSerialize()
+    {
+        $err     = array(
+            "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
+            "Failed to serialize value: Incompatible type"
+        );
         $closure = function () {
         };
 
@@ -63,8 +68,12 @@ class PlainTextTest extends PHPUnit_Framework_TestCase {
         return $ret;
     }
 
-    public function dataProviderParse() {
-        $err     = array("\\AMQPy\\Exceptions\\SerializerException", "Failed to parse value: Incompatible type");
+    public function dataProviderParse()
+    {
+        $err     = array(
+            "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
+            "Failed to parse value: Incompatible type"
+        );
         $closure = function () {
         };
 
@@ -99,7 +108,8 @@ class PlainTextTest extends PHPUnit_Framework_TestCase {
      * @dataProvider dataProviderSerialize
      *
      */
-    public function testSerialize($value, $error, $output) {
+    public function testSerialize($value, $error, $output)
+    {
         try {
             $serialized = $this->object->serialize($value);
         } catch (Exception $e) {
@@ -120,7 +130,8 @@ class PlainTextTest extends PHPUnit_Framework_TestCase {
      *
      * @dataProvider dataProviderParse
      */
-    public function testParse($value, $error, $output) {
+    public function testParse($value, $error, $output)
+    {
         try {
             $parsed = $this->object->parse($value);
         } catch (Exception $e) {
@@ -139,7 +150,8 @@ class PlainTextTest extends PHPUnit_Framework_TestCase {
     /**
      * @covers \AMQPy\Serializers\PlainText::getContentType
      */
-    public function testGetContentType() {
+    public function testGetContentType()
+    {
         $this->assertSame(PlainText::MIME, $this->object->getContentType());
     }
 }

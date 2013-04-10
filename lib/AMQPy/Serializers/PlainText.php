@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @url https://github.com/pinepain/amqpy
  *
  * For the full copyright and license information, please view the LICENSE
@@ -9,16 +9,15 @@
 
 namespace AMQPy\Serializers;
 
-
 use AMQPy\ISerializer;
+use AMQPy\Serializers\Exceptions\SerializerException;
 
-use \AMQPy\Exceptions\SerializerException;
-
-
-class PlainText implements ISerializer {
+class PlainText implements ISerializer
+{
     const MIME = 'plain/text';
 
-    public function serialize($value) {
+    public function serialize($value)
+    {
         if (!is_string($value) && !is_numeric($value)) {
             throw new SerializerException("Failed to serialize value: Incompatible type");
         }
@@ -26,7 +25,8 @@ class PlainText implements ISerializer {
         return (string)$value;
     }
 
-    public function parse($value) {
+    public function parse($value)
+    {
         if (!is_string($value) && !is_numeric($value)) {
             throw new SerializerException("Failed to parse value: Incompatible type");
         }
@@ -34,7 +34,8 @@ class PlainText implements ISerializer {
         return $value;
     }
 
-    public function getContentType() {
+    public function getContentType()
+    {
         return self::MIME;
     }
 }

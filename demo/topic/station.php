@@ -1,15 +1,16 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @created 12/24/12 8:16 PM
  */
+
+use AMQPy\Solutions\Generic;
 
 include (dirname(__FILE__) . '/../config.php');
 
 
-use AMQPy\Solutions\Generic;
-
-class DemoStation {
+class DemoStation
+{
     public $continents = array(
         'africa',
         'europe',
@@ -20,23 +21,27 @@ class DemoStation {
         'daily',
     );
 
-    public function getWeekly($continent) {
+    public function getWeekly($continent)
+    {
         $continent_temperature = 'get' . ucfirst($continent) . 'Temperature';
 
         return "{$this->$continent_temperature()} weather every week in {$continent}";
     }
 
-    public function getDaily($continent) {
+    public function getDaily($continent)
+    {
         $continent_temperature = 'get' . ucfirst($continent) . 'Temperature';
 
         return "{$this->$continent_temperature()} weather every day in {$continent}";
     }
 
-    private function getAfricaTemperature() {
+    private function getAfricaTemperature()
+    {
         return 'warm';
     }
 
-    private function getEuropeTemperature() {
+    private function getEuropeTemperature()
+    {
         return 'cold';
     }
 
@@ -54,8 +59,8 @@ while (true) {
     $term      = $forecast->terms[array_rand($forecast->terms)];
 
 
-    $method    = 'get' . ucfirst($term);
-    $weather   = $forecast->$method($continent);
+    $method  = 'get' . ucfirst($term);
+    $weather = $forecast->$method($continent);
 
     $exchange->send($weather, "example.topic.weather.{$continent}.{$term}");
     echo "Sent {$continent} {$term} forecast #{$count}: {$weather}" . PHP_EOL;

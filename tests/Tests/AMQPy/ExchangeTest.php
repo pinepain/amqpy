@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @created 1/20/13 @ 6:32 PM
  */
 
@@ -8,16 +8,15 @@ namespace Tests\AMQPy;
 
 
 use AMQPQueue;
-
-use \AMQPy\Connection;
-use \AMQPy\Exchange;
-use \AMQPy\Serializers\PhpNative;
-
+use AMQPy\Connection;
+use AMQPy\Exchange;
+use AMQPy\Serializers\PhpNative;
 
 /**
  * @group core
  */
-class ExchangeTest extends \PHPUnit_Framework_TestCase {
+class ExchangeTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var Connection
      */
@@ -28,13 +27,15 @@ class ExchangeTest extends \PHPUnit_Framework_TestCase {
      */
     protected $serializer;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->connection = new Connection();
         $this->connection->connect();
         $this->serializer = new PhpNative();
     }
 
-    protected function tearDown() {
+    protected function tearDown()
+    {
         $this->connection->disconnect();
     }
 
@@ -43,7 +44,8 @@ class ExchangeTest extends \PHPUnit_Framework_TestCase {
      * @covers AMQPy\Exchange::getConnection
      * @covers AMQPy\Exchange::getSerializer
      */
-    public function testConstructor() {
+    public function testConstructor()
+    {
         $ex = new Exchange($this->connection->getDefaultChannel(), $this->serializer);
         $this->assertSame($this->connection->getDefaultChannel(), $ex->getChannel());
         $this->assertSame($this->serializer, $ex->getSerializer());
@@ -53,11 +55,12 @@ class ExchangeTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Connection::setDefaultChannel
      */
-    public function testSend() {
-        $time = microtime(true);
-        $exhange_name = 'test.exchange.'.$time;
-        $queue_name = 'test.exchange.'.$time;
-        $route_key = 'route.key1.'.$time;
+    public function testSend()
+    {
+        $time         = microtime(true);
+        $exhange_name = 'test.exchange.' . $time;
+        $queue_name   = 'test.exchange.' . $time;
+        $route_key    = 'route.key1.' . $time;
 
         $message = array('datetime' => new \DateTime(), 'test' => 'message');
         $headers = array('one' => 'two');
@@ -95,7 +98,8 @@ class ExchangeTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Connection::getDefaultChannel
      */
-    public function testGetDefaultChannel() {
+    public function testGetDefaultChannel()
+    {
         $ch = $this->object->getDefaultChannel();
         $this->assertInstanceOf('\AMQPy\Channel', $ch);
         $this->assertSame($ch, $this->object->getDefaultChannel());
@@ -104,8 +108,9 @@ class ExchangeTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Connection::setDefaultChannel
      */
-    public function testSetDefaultChannelImplicit() {
-        $ch = $this->object->getChannel();
+    public function testSetDefaultChannelImplicit()
+    {
+        $ch     = $this->object->getChannel();
         $ch_set = $this->object->setDefaultChannel($ch);
 
         $this->assertSame($ch, $ch_set);
@@ -115,7 +120,8 @@ class ExchangeTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Connection::setDefaultChannel
      */
-    public function testSetDefaultChannelExplicit() {
+    public function testSetDefaultChannelExplicit()
+    {
         $ch = $this->object->setDefaultChannel();
 
         $this->assertInstanceOf('\AMQPy\Channel', $ch);
@@ -125,10 +131,11 @@ class ExchangeTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Connection::setDefaultChannel
      *
-     *  @expectedException \AMQPConnectionException
-     *  @expectedExceptionMessage Channel does not belong to this connection
+     * @expectedException \AMQPConnectionException
+     * @expectedExceptionMessage Channel does not belong to this connection
      */
-    public function testSetDefaultChannelFromOtherConnection() {
+    public function testSetDefaultChannelFromOtherConnection()
+    {
         $cnn = new Connection();
         $this->assertNotSame($cnn, $this->object);
 

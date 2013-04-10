@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @created 1/20/13 @ 1:12 AM
  */
 
@@ -20,7 +20,6 @@ $config = array(
             'flags'      => AMQP_DURABLE, // if shutdown occurred messages still be in queues
             'attributes' => array(),
         ),
-
         'queues'     => array(
             'example.topic.weather.africa' => array(
                 'flags'          => AMQP_DURABLE,
@@ -28,28 +27,24 @@ $config = array(
                 'routing_key'    => 'example.topic.weather.africa.*',
                 'consumer_flags' => AMQP_AUTOACK,
             ),
-
             'example.topic.weather.europe' => array(
                 'flags'          => AMQP_DURABLE,
                 'args'           => array(),
                 'routing_key'    => 'example.topic.weather.europe.*',
                 'consumer_flags' => AMQP_AUTOACK,
             ),
-
             'example.topic.weather.weekly' => array(
                 'flags'          => AMQP_DURABLE,
                 'args'           => array(),
                 'routing_key'    => 'example.topic.weather.*.weekly',
                 'consumer_flags' => AMQP_AUTOACK,
             ),
-
             'example.topic.weather.daily'  => array(
                 'flags'          => AMQP_DURABLE,
                 'args'           => array(),
                 'routing_key'    => 'example.topic.weather.*.daily',
                 'consumer_flags' => AMQP_AUTOACK,
             ),
-
             'example.topic.weather.all'    => array(
                 'flags'          => AMQP_DURABLE,
                 'args'           => array(),

@@ -1,28 +1,29 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @created 1/20/13 @ 7:25 PM
  */
 
 namespace AMQPy;
 
+use AMQPChannel;
 
-use \AMQPChannel;
-
-
-class Channel extends AMQPChannel {
+class Channel extends AMQPChannel
+{
     /**
      * @var Connection
      */
     private $connection;
 
-    public function __construct(Connection $connection) {
+    public function __construct(Connection $connection)
+    {
         parent::__construct($connection);
 
         $this->connection = $connection;
     }
 
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->connection;
     }
 }

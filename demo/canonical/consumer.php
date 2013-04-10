@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @created 1/19/13 @ 9:28 PM
  */
 
@@ -32,8 +32,10 @@ $queue->bind($exchange_name, $route_key);
 // NOTE: if exchange doesn't exists you can't bind queue to it, which is
 // although quite obvious
 
-$queue->consume(function (AMQPEnvelope $envelope, AMQPQueue $queue) {
-    $message = $envelope->getBody();
-    echo "Received {$message} and received at " . date(DATE_RFC822), PHP_EOL;
-    $queue->ack($envelope->getDeliveryTag());
-});
+$queue->consume(
+    function (AMQPEnvelope $envelope, AMQPQueue $queue) {
+        $message = $envelope->getBody();
+        echo "Received {$message} and received at " . date(DATE_RFC822), PHP_EOL;
+        $queue->ack($envelope->getDeliveryTag());
+    }
+);

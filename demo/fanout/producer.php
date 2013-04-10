@@ -1,62 +1,73 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @created 12/24/12 8:16 PM
  */
+
+use AMQPy\Solutions\Generic;
 
 include 'bootstrap.php';
 
 
-use AMQPy\Solutions\Generic;
-
-
-class EchoProducer {
-    public function getObject() {
+class EchoProducer
+{
+    public function getObject()
+    {
         $obj           = new StdClass;
         $obj->datetime = new DateTime();
 
         return $obj;
     }
 
-    public function getArray() {
+    public function getArray()
+    {
         return array('test' => 'array', 42, new DateTime());
     }
 
-    public function getResource() {
+    public function getResource()
+    {
         $f = fopen('/tmp/test.file', 'w');
 
         return $f;
     }
 
-    public function getString() {
+    public function getString()
+    {
         return 'test_string';
     }
 
-    public function getInteger() {
+    public function getInteger()
+    {
         return 42;
     }
 
-    public function getFloat() {
+    public function getFloat()
+    {
         return 42.42424242;
     }
 
-    public function getTrue() {
+    public function getTrue()
+    {
         return true;
     }
 
-    public function getFalse() {
+    public function getFalse()
+    {
         return false;
     }
 
-    public function getNull() {
+    public function getNull()
+    {
         return null;
     }
 
-    public function getZero() {
+    public function getZero()
+    {
         return 0;
     }
 
-    public function getEmptystr() {
+    public function getEmptystr()
+    {
         return '';
     }
 }

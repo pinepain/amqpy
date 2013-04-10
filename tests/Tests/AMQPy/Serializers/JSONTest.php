@@ -1,15 +1,15 @@
 <?php
 namespace Tests\AMQPy\Serializers;
 
-use \Exception;
-use \StdClass;
-
-use \AMQPy\Serializers\JSON;
+use AMQPy\Serializers\JSON;
+use Exception;
+use StdClass;
 
 /**
  * @group serializers
  */
-class JSONTest extends \PHPUnit_Framework_TestCase {
+class JSONTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var JSON
      */
@@ -19,7 +19,8 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->object = new JSON;
     }
 
@@ -27,15 +28,20 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
      */
-    protected function tearDown() {
+    protected function tearDown()
+    {
     }
 
-    public function dataProviderSerialize() {
+    public function dataProviderSerialize()
+    {
         $closure = function () {
         };
 
         if (PHP_MAJOR_VERSION > 4 && PHP_MINOR_VERSION > 4) {
-            $warn = array("\\AMQPy\\Exceptions\\SerializerException", 'Failed to serialize value: Unknown error');
+            $warn = array(
+                "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
+                'Failed to serialize value: Unknown error'
+            );
         } else {
             $warn = array('PHPUnit_Framework_Error_Warning', 'json_encode(): type is unsupported, encoded as null');
         }
@@ -71,8 +77,12 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    public function dataProviderParse() {
-        $err = array("\\AMQPy\\Exceptions\\SerializerException", "Failed to parse value: Syntax error, malformed JSON");
+    public function dataProviderParse()
+    {
+        $err = array(
+            "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
+            "Failed to parse value: Syntax error, malformed JSON"
+        );
 
         $closure = function () {
         };
@@ -117,7 +127,8 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider dataProviderSerialize
      *
      */
-    public function testSerialize($value, $error, $output, $warning = null) {
+    public function testSerialize($value, $error, $output, $warning = null)
+    {
         if (!empty($warning)) {
             $this->setExpectedException($warning[0], $warning[1]);
         }
@@ -144,7 +155,8 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
      *
      * @dataProvider dataProviderParse
      */
-    public function testParse($value, $error, $output = null) {
+    public function testParse($value, $error, $output = null)
+    {
         try {
             $parsed = $this->object->parse($value);
         } catch (Exception $e) {
@@ -163,7 +175,8 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Serializers\PhpNative::getContentType
      */
-    public function testGetContentType() {
+    public function testGetContentType()
+    {
         $this->assertSame(JSON::MIME, $this->object->getContentType());
     }
 }

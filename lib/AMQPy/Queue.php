@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @url https://github.com/pinepain/amqpy
  *
  * For the full copyright and license information, please view the LICENSE
@@ -9,18 +9,15 @@
 
 namespace AMQPy;
 
-use \AMQPQueue;
-use \AMQPEnvelope;
-use \Exception;
-
-
+use AMQPEnvelope;
+use AMQPQueue;
 use AMQPy\Hooks\IPostConsumer;
 use AMQPy\Hooks\IPreConsumer;
+use AMQPy\Serializers\Exceptions\SerializerException;
+use Exception;
 
-use \AMQPy\Exceptions\SerializerException;
-
-
-class Queue extends AMQPQueue {
+class Queue extends AMQPQueue
+{
     /**
      * @var ISerializer
      */
@@ -31,15 +28,18 @@ class Queue extends AMQPQueue {
      */
     private $channel = null;
 
-    public function getChannel() {
+    public function getChannel()
+    {
         return $this->channel;
     }
 
-    public function getSerializer() {
+    public function getSerializer()
+    {
         return $this->serializer;
     }
 
-    public function __construct(Channel $amqp_channel, ISerializer $serializer) {
+    public function __construct(Channel $amqp_channel, ISerializer $serializer)
+    {
         parent::__construct($amqp_channel);
 
         $this->serializer = $serializer;
@@ -50,66 +50,73 @@ class Queue extends AMQPQueue {
      * Attach consumer to process payload from queue
      *
      * @param IConsumer $consumer Consumer to process payload and handle possible errors
-     * @param int       $flags    Consumer flags, AMQP_NOPARAM or AMQP_AUTOACK
+     * @param int $flags    Consumer flags, AMQP_NOPARAM or AMQP_AUTOACK
      *
      * @return mixed
      *
      * @throws SerializerException
      * @throws Exception           Any exception from pre/post-consume handlers and from exception handler
      */
-    public function listen(IConsumer $consumer, $flags = AMQP_NOPARAM) {
+    public function listen(IConsumer $consumer, $flags = AMQP_NOPARAM)
+    {
         // Do not catch exceptions from Queue::listen to prevent your app from
         // failing. If something bad happens here in most cases it's quite
         // critical problem or crappy code.
 
         $serializer = $this->getSerializer();
 
-        $this->consume(function (AMQPEnvelope $envelope, Queue $queue) use ($consumer, $serializer) {
-            if ($consumer instanceof IPreConsumer) {
-                $consumer->preConsume($envelope, $queue);
-            }
-
-            $ret = null;
-            $err = null;
-
-            try {
-                if ($envelope->getContentType() !== $serializer->getContentType()) {
-                    throw new SerializerException('Content type mismatch');
+        $this->consume(
+            function (AMQPEnvelope $envelope, Queue $queue) use ($consumer, $serializer) {
+                if ($consumer instanceof IPreConsumer) {
+                    $consumer->preConsume($envelope, $queue);
                 }
 
-                $payload = $serializer->parse($envelope->getBody());
+                $ret = null;
+                $err = null;
 
-                $ret = $consumer->consume($payload, $envelope, $queue);
-            } catch (Exception $e) {
                 try {
-                    $ret = $consumer->except($e, $envelope, $queue);
+                    if ($envelope->getContentType() !== $serializer->getContentType()) {
+                        throw new SerializerException('Content type mismatch');
+                    }
+
+                    $payload = $serializer->parse($envelope->getBody());
+
+                    $ret = $consumer->consume($payload, $envelope, $queue);
                 } catch (Exception $e) {
-                    $err = $e;
+                    try {
+                        $ret = $consumer->except($e, $envelope, $queue);
+                    } catch (Exception $e) {
+                        $err = $e;
+                    }
                 }
-            }
 
-            if ($consumer instanceof IPostConsumer) {
-                $consumer->postConsume($envelope, $queue);
-            }
+                if ($consumer instanceof IPostConsumer) {
+                    $consumer->postConsume($envelope, $queue);
+                }
 
-            if ($err) {
-                throw $err;
-            }
+                if ($err) {
+                    throw $err;
+                }
 
-            return $ret;
+                return $ret;
 
-        }, $flags);
+            },
+            $flags
+        );
     }
 
-    public function received(AMQPEnvelope $envelope) {
+    public function received(AMQPEnvelope $envelope)
+    {
         return $this->ack($envelope->getDeliveryTag());
     }
 
-    public function resend(AMQPEnvelope $envelope) {
+    public function resend(AMQPEnvelope $envelope)
+    {
         $this->nack($envelope->getDeliveryTag(), AMQP_REQUEUE);
     }
 
-    public function drop(AMQPEnvelope $envelope) {
+    public function drop(AMQPEnvelope $envelope)
+    {
         $this->nack($envelope->getDeliveryTag());
     }
 }

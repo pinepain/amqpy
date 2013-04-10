@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @url https://github.com/pinepain/amqpy
  *
  * For the full copyright and license information, please view the LICENSE
@@ -8,12 +8,11 @@
  */
 namespace AMQPy;
 
-use \AMQPConnection;
+use AMQPConnection;
+use AMQPConnectionException;
 
-use \AMQPConnectionException;
-
-
-class Connection extends AMQPConnection {
+class Connection extends AMQPConnection
+{
     /**
      * @var Channel default channel
      *
@@ -26,12 +25,13 @@ class Connection extends AMQPConnection {
      * Creates an AMQPConnection instance representing a connection to an AMQP broker and immediately connect to broker
      *
      * @param array $credentials Information for connecting to the AMQP broker.
-     * @param bool  $connect Should
+     * @param bool $connect Should
      *
      * All the other keys are ignored.
      * Note: A connection will not be established until AMQPConnection::connect() is called.
      */
-    public function __construct(array $credentials = array(), $connect = true) {
+    public function __construct(array $credentials = array(), $connect = true)
+    {
         parent::__construct($credentials);
 
         if ($connect) {
@@ -39,7 +39,8 @@ class Connection extends AMQPConnection {
         }
     }
 
-    public function getDefaultChannel() {
+    public function getDefaultChannel()
+    {
         if (null === $this->default_channel) {
             $this->setDefaultChannel();
         }
@@ -47,7 +48,8 @@ class Connection extends AMQPConnection {
         return $this->default_channel;
     }
 
-    public function setDefaultChannel(Channel $channel=null) {
+    public function setDefaultChannel(Channel $channel = null)
+    {
         if ($channel) {
             if ($channel->getConnection() !== $this) {
                 throw new AMQPConnectionException("Channel does not belong to this connection");
@@ -59,20 +61,22 @@ class Connection extends AMQPConnection {
         return $this->default_channel = $channel;
     }
 
-    public function getChannel() {
+    public function getChannel()
+    {
         return new Channel($this);
     }
 
     /**
-     * @param string      $name       The name of the exchange to set as string.
-     * @param string      $type       The type of the exchange. This can be any of AMQP_EX_TYPE_DIRECT, AMQP_EX_TYPE_FANOUT, AMQP_EX_TYPE_HEADER or AMQP_EX_TYPE_TOPIC.
+     * @param string $name       The name of the exchange to set as string.
+     * @param string $type       The type of the exchange. This can be any of AMQP_EX_TYPE_DIRECT, AMQP_EX_TYPE_FANOUT, AMQP_EX_TYPE_HEADER or AMQP_EX_TYPE_TOPIC.
      * @param ISerializer $serializer Messages serailizer
-     * @param int | null  $flags      A bitmask of flags. This call currently only considers the following flags: AMQP_DURABLE, AMQP_PASSIVE.
-     * @param array       $args       An array of key/value pairs of arguments.
+     * @param int | null $flags      A bitmask of flags. This call currently only considers the following flags: AMQP_DURABLE, AMQP_PASSIVE.
+     * @param array $args       An array of key/value pairs of arguments.
      *
      * @return Exchange A new instance of an Exchange object, associated with this channel.
      */
-    public function getExchange($name, $type, ISerializer $serializer, $flags = null, array $args = array()) {
+    public function getExchange($name, $type, ISerializer $serializer, $flags = null, array $args = array())
+    {
         $exchange = new Exchange($this->getDefaultChannel(), $serializer);
 
         $exchange->setName($name);

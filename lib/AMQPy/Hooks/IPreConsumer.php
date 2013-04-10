@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @url https://github.com/pinepain/amqpy
  *
  * For the full copyright and license information, please view the LICENSE
@@ -9,17 +9,16 @@
 
 namespace AMQPy\Hooks;
 
+use AMQPEnvelope;
+use AMQPy\Queue;
 
-use \AMQPEnvelope;
-use \AMQPy\Queue;
-
-
-interface IPreConsumer {
+interface IPreConsumer
+{
     /**
      * Pre-consume hook. Invoked on each envelope receive.
      *
      * @param AMQPEnvelope $envelope An instance representing the message pulled from the queue
-     * @param Queue        $queue    Queue from which the message was consumed
+     * @param Queue $queue    Queue from which the message was consumed
      */
     public function preConsume(AMQPEnvelope $envelope, Queue $queue);
 }

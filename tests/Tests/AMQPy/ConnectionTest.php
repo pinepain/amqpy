@@ -1,22 +1,21 @@
 <?php
 /**
- * @author Ben Pinepain <pinepain@gmail.com>
+ * @author Bogdan Padalko <pinepain@gmail.com>
  * @created 1/20/13 @ 6:32 PM
  */
 
 namespace Tests\AMQPy;
 
 
-use \AMQPy\Connection;
-use \AMQPy\Serializers\PhpNative;
-
-use \AMQPExchangeException;
-
+use AMQPExchangeException;
+use AMQPy\Connection;
+use AMQPy\Serializers\PhpNative;
 
 /**
  * @group core
  */
-class ConnectionTest extends \PHPUnit_Framework_TestCase {
+class ConnectionTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var Connection
      */
@@ -26,7 +25,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->connection = new Connection();
         $this->connection->connect();
     }
@@ -35,14 +35,16 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
      */
-    protected function tearDown() {
+    protected function tearDown()
+    {
         $this->connection->disconnect();
     }
 
     /**
      * @covers AMQPy\Connection::__construct
      */
-    public function testConstructor() {
+    public function testConstructor()
+    {
         $cnn = new Connection();
         $this->assertTrue($cnn->isConnected());
         $cnn->disconnect();
@@ -57,7 +59,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Connection::setDefaultChannel
      */
-    public function testGetChannel() {
+    public function testGetChannel()
+    {
         $ch = $this->connection->getChannel();
         $this->assertInstanceOf('\AMQPy\Channel', $ch);
         $this->assertSame($ch->getConnection(), $this->connection);
@@ -67,7 +70,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Connection::getDefaultChannel
      */
-    public function testGetDefaultChannel() {
+    public function testGetDefaultChannel()
+    {
         $ch = $this->connection->getDefaultChannel();
         $this->assertInstanceOf('\AMQPy\Channel', $ch);
         $this->assertSame($ch, $this->connection->getDefaultChannel());
@@ -76,7 +80,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Connection::setDefaultChannel
      */
-    public function testSetDefaultChannelImplicit() {
+    public function testSetDefaultChannelImplicit()
+    {
         $ch     = $this->connection->getChannel();
         $ch_set = $this->connection->setDefaultChannel($ch);
 
@@ -87,7 +92,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Connection::setDefaultChannel
      */
-    public function testSetDefaultChannelExplicit() {
+    public function testSetDefaultChannelExplicit()
+    {
         $ch = $this->connection->setDefaultChannel();
 
         $this->assertInstanceOf('\AMQPy\Channel', $ch);
@@ -100,7 +106,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
      * @expectedException \AMQPConnectionException
      * @expectedExceptionMessage Channel does not belong to this connection
      */
-    public function testSetDefaultChannelFromOtherConnection() {
+    public function testSetDefaultChannelFromOtherConnection()
+    {
         $cnn = new Connection();
         $this->assertNotSame($cnn, $this->connection);
 
@@ -112,12 +119,13 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase {
      * @covers AMQPy\Exchange::getSerializer
      * @covers AMQPy\Exchange::getConnection
      */
-    public function testGetExchange() {
-        $name = 'test.exchange.' . microtime(true);
-        $type = AMQP_EX_TYPE_FANOUT;
+    public function testGetExchange()
+    {
+        $name       = 'test.exchange.' . microtime(true);
+        $type       = AMQP_EX_TYPE_FANOUT;
         $serializer = new PhpNative();
-        $flags = AMQP_DURABLE | AMQP_AUTODELETE;
-        $args = array('alternate-exchange' => 'amq.fanout');
+        $flags      = AMQP_DURABLE | AMQP_AUTODELETE;
+        $args       = array('alternate-exchange' => 'amq.fanout');
 
         $ex = $this->connection->getExchange($name, $type, $serializer, $flags, $args);
 

@@ -1,15 +1,15 @@
 <?php
 namespace Tests\AMQPy\Serializers;
 
-use \Exception;
-use \StdClass;
-
-use \AMQPy\Serializers\PhpNative;
+use AMQPy\Serializers\PhpNative;
+use Exception;
+use StdClass;
 
 /**
  * @group serializers
  */
-class PhpNativeTest extends \PHPUnit_Framework_TestCase {
+class PhpNativeTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var PhpNative
      */
@@ -19,7 +19,8 @@ class PhpNativeTest extends \PHPUnit_Framework_TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->object = new PhpNative;
     }
 
@@ -27,10 +28,12 @@ class PhpNativeTest extends \PHPUnit_Framework_TestCase {
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
      */
-    protected function tearDown() {
+    protected function tearDown()
+    {
     }
 
-    public function dataProviderSerialize() {
+    public function dataProviderSerialize()
+    {
         $err     = array("Exception", "Serialization of 'Closure' is not allowed");
         $closure = function () {
         };
@@ -66,9 +69,16 @@ class PhpNativeTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    public function dataProviderParse() {
-        $err   = array("\\AMQPy\\Exceptions\\SerializerException", "Failed to parse value: String is not unserializeable");
-        $err_2 = array("\\AMQPy\\Exceptions\\SerializerException", "Failed to parse value: Incompatible type");
+    public function dataProviderParse()
+    {
+        $err   = array(
+            "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
+            "Failed to parse value: String is not unserializeable"
+        );
+        $err_2 = array(
+            "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
+            "Failed to parse value: Incompatible type"
+        );
 
         $closure = function () {
         };
@@ -137,7 +147,8 @@ class PhpNativeTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider dataProviderSerialize
      *
      */
-    public function testSerialize($value, $error, $output, $match_format = false) {
+    public function testSerialize($value, $error, $output, $match_format = false)
+    {
         try {
             $serialized = $this->object->serialize($value);
         } catch (Exception $e) {
@@ -162,7 +173,8 @@ class PhpNativeTest extends \PHPUnit_Framework_TestCase {
      *
      * @dataProvider dataProviderParse
      */
-    public function testParse($value, $error, $output = null) {
+    public function testParse($value, $error, $output = null)
+    {
         try {
             $parsed = $this->object->parse($value);
         } catch (Exception $e) {
@@ -181,7 +193,8 @@ class PhpNativeTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers AMQPy\Serializers\PhpNative::getContentType
      */
-    public function testGetContentType() {
+    public function testGetContentType()
+    {
         $this->assertSame(PhpNative::MIME, $this->object->getContentType());
     }
 }
