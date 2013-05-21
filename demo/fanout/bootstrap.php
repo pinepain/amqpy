@@ -1,8 +1,4 @@
 <?php
-/**
- * @author Bogdan Padalko <pinepain@gmail.com>
- * @created 1/19/13 @ 9:37 PM
- */
 
 $file = __DIR__ . '/../../vendor/autoload.php';
 if (!file_exists($file)) {

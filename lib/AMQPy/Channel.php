@@ -1,8 +1,4 @@
 <?php
-/**
- * @author Bogdan Padalko <pinepain@gmail.com>
- * @created 1/20/13 @ 7:25 PM
- */
 
 namespace AMQPy;
 

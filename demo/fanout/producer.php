@@ -1,8 +1,4 @@
 <?php
-/**
- * @author Bogdan Padalko <pinepain@gmail.com>
- * @created 12/24/12 8:16 PM
- */
 
 use AMQPy\Solutions\Generic;
 

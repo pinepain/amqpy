@@ -4,9 +4,10 @@
     "description": "Lightweight AMQP framework built on top of the peacl-amqp extension",
     "keywords": ["rabbitmq", "amqp", "message", "queue"],
     "homepage": "https://github.com/pinepain/amqpy",
+    "license": "MIT",
     "authors": [
         {
-            "name": "Ben Pinepain",
+            "name": "Bogdan Padalko",
             "email": "pinepain@gmail.com"
         }
     ],

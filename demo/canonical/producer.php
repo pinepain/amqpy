@@ -1,8 +1,4 @@
 <?php
-/**
- * @author Bogdan Padalko <pinepain@gmail.com>
- * @created 12/24/12 8:16 PM
- */
 
 $exchange_name = 'example.fanout';
 $queue_name    = 'example.fanout.default';
