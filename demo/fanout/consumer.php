@@ -1,13 +1,13 @@
 <?php
 
-use AMQPy\IConsumer;
+use AMQPy\ConsumerInterface;
 use AMQPy\Queue;
 use AMQPy\Solutions\Generic;
 
 include 'bootstrap.php';
 
 
-class EchoConsumer implements IConsumer
+class EchoConsumer implements ConsumerInterface
 {
     private $counter = 0;
 

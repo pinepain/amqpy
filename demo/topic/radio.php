@@ -1,6 +1,6 @@
 <?php
 
-use AMQPy\IConsumer;
+use AMQPy\ConsumerInterface;
 use AMQPy\Queue;
 use AMQPy\Solutions\Generic;
 
@@ -8,7 +8,7 @@ include (dirname(__FILE__) . '/../../init_web.php');
 include (dirname(__FILE__) . '/../config.php');
 
 
-class DemoReceiver implements IConsumer
+class DemoReceiver implements ConsumerInterface
 {
     private $counter = 0;
     private $radio_station;

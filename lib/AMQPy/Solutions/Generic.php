@@ -4,7 +4,7 @@ namespace AMQPy\Solutions;
 
 use AMQPException;
 use AMQPy\Connection;
-use AMQPy\IConsumer;
+use AMQPy\ConsumerInterface;
 use AMQPy\Queue;
 
 class Generic
@@ -85,12 +85,12 @@ class Generic
     /**
      * Attach consumer to process payload from queue
      *
-     * @param IConsumer $consumer Consumer to process payload and handle possible errors
+     * @param ConsumerInterface $consumer Consumer to process payload and handle possible errors
      * @param string $queue    Queue name to attach consumer to;
      *
      * @return mixed
      */
-    public function listen(IConsumer $consumer, $queue)
+    public function listen(ConsumerInterface $consumer, $queue)
     {
         $q  = $this->getQueue($queue);
         $_q = $this->settings['exchanges']['queues'][$queue];

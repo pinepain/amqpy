@@ -5,7 +5,7 @@ namespace AMQPy\Hooks;
 use AMQPEnvelope;
 use AMQPy\Queue;
 
-interface IPreConsumer
+interface PreConsumeInterface
 {
     /**
      * Pre-consume hook. Invoked on each envelope receive.

@@ -2,10 +2,10 @@
 
 namespace AMQPy\Serializers;
 
-use AMQPy\ISerializer;
+use AMQPy\SerializerInterface;
 use AMQPy\Serializers\Exceptions\SerializerException;
 
-class PhpNative implements ISerializer
+class PhpNative implements SerializerInterface
 {
     const MIME = 'application/vnd.php.serialized';
 

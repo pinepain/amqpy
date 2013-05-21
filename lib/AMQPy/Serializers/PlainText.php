@@ -2,10 +2,10 @@
 
 namespace AMQPy\Serializers;
 
-use AMQPy\ISerializer;
+use AMQPy\SerializerInterface;
 use AMQPy\Serializers\Exceptions\SerializerException;
 
-class PlainText implements ISerializer
+class PlainText implements SerializerInterface
 {
     const MIME = 'plain/text';
 

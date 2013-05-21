@@ -2,10 +2,10 @@
 
 namespace AMQPy\Serializers;
 
-use AMQPy\ISerializer;
+use AMQPy\SerializerInterface;
 use AMQPy\Serializers\Exceptions\SerializerException;
 
-class JSON implements ISerializer
+class JSON implements SerializerInterface
 {
     const MIME = 'application/json';
 

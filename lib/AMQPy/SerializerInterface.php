@@ -4,7 +4,7 @@ namespace AMQPy;
 
 use AMQPy\Serializers\Exceptions\SerializerException;
 
-interface ISerializer
+interface SerializerInterface
 {
     /**
      * Returns string representation of a value

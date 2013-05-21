@@ -5,7 +5,7 @@ namespace AMQPy;
 use AMQPEnvelope;
 use Exception;
 
-interface IConsumer
+interface ConsumerInterface
 {
     /**
      * Process received data from queued message.

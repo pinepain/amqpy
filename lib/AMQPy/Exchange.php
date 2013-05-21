@@ -8,7 +8,7 @@ use AMQPExchangeException;
 class Exchange extends AMQPExchange
 {
     /**
-     * @var ISerializer
+     * @var SerializerInterface
      */
     private $serializer = null;
 
@@ -27,7 +27,7 @@ class Exchange extends AMQPExchange
         return $this->serializer;
     }
 
-    public function __construct(Channel $amqp_channel, ISerializer $serializer)
+    public function __construct(Channel $amqp_channel, SerializerInterface $serializer)
     {
         parent::__construct($amqp_channel);
 

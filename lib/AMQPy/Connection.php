@@ -63,13 +63,13 @@ class Connection extends AMQPConnection
     /**
      * @param string $name       The name of the exchange to set as string.
      * @param string $type       The type of the exchange. This can be any of AMQP_EX_TYPE_DIRECT, AMQP_EX_TYPE_FANOUT, AMQP_EX_TYPE_HEADER or AMQP_EX_TYPE_TOPIC.
-     * @param ISerializer $serializer Messages serailizer
+     * @param SerializerInterface $serializer Messages serailizer
      * @param int | null $flags      A bitmask of flags. This call currently only considers the following flags: AMQP_DURABLE, AMQP_PASSIVE.
      * @param array $args       An array of key/value pairs of arguments.
      *
      * @return Exchange A new instance of an Exchange object, associated with this channel.
      */
-    public function getExchange($name, $type, ISerializer $serializer, $flags = null, array $args = array())
+    public function getExchange($name, $type, SerializerInterface $serializer, $flags = null, array $args = array())
     {
         $exchange = new Exchange($this->getDefaultChannel(), $serializer);
 

@@ -4,15 +4,15 @@ namespace AMQPy;
 
 use AMQPEnvelope;
 use AMQPQueue;
-use AMQPy\Hooks\IPostConsumer;
-use AMQPy\Hooks\IPreConsumer;
+use AMQPy\Hooks\PostConsumeInterface;
+use AMQPy\Hooks\PreConsumeInterface;
 use AMQPy\Serializers\Exceptions\SerializerException;
 use Exception;
 
 class Queue extends AMQPQueue
 {
     /**
-     * @var ISerializer
+     * @var SerializerInterface
      */
     private $serializer = null;
 
@@ -31,7 +31,7 @@ class Queue extends AMQPQueue
         return $this->serializer;
     }
 
-    public function __construct(Channel $amqp_channel, ISerializer $serializer)
+    public function __construct(Channel $amqp_channel, SerializerInterface $serializer)
     {
         parent::__construct($amqp_channel);
 
@@ -42,7 +42,7 @@ class Queue extends AMQPQueue
     /**
      * Attach consumer to process payload from queue
      *
-     * @param IConsumer $consumer Consumer to process payload and handle possible errors
+     * @param ConsumerInterface $consumer Consumer to process payload and handle possible errors
      * @param int $flags    Consumer flags, AMQP_NOPARAM or AMQP_AUTOACK
      *
      * @return mixed
@@ -50,7 +50,7 @@ class Queue extends AMQPQueue
      * @throws SerializerException
      * @throws Exception           Any exception from pre/post-consume handlers and from exception handler
      */
-    public function listen(IConsumer $consumer, $flags = AMQP_NOPARAM)
+    public function listen(ConsumerInterface $consumer, $flags = AMQP_NOPARAM)
     {
         // Do not catch exceptions from Queue::listen to prevent your app from
         // failing. If something bad happens here in most cases it's quite
@@ -60,7 +60,7 @@ class Queue extends AMQPQueue
 
         $this->consume(
             function (AMQPEnvelope $envelope, Queue $queue) use ($consumer, $serializer) {
-                if ($consumer instanceof IPreConsumer) {
+                if ($consumer instanceof PreConsumeInterface) {
                     $consumer->preConsume($envelope, $queue);
                 }
 
@@ -83,7 +83,7 @@ class Queue extends AMQPQueue
                     }
                 }
 
-                if ($consumer instanceof IPostConsumer) {
+                if ($consumer instanceof PostConsumeInterface) {
                     $consumer->postConsume($envelope, $queue);
                 }
 
