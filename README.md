@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/zaq178miami/amqpy.png?branch=master)](https://travis-ci.org/zaq178miami/amqpy)
+[![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=master)](https://travis-ci.org/zaq178miami/amqpy)
 AMQPy
 =====
 
