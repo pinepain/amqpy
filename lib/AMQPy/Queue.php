@@ -43,59 +43,77 @@ class Queue extends AMQPQueue
      * Attach consumer to process payload from queue
      *
      * @param ConsumerInterface $consumer Consumer to process payload and handle possible errors
-     * @param int $flags    Consumer flags, AMQP_NOPARAM or AMQP_AUTOACK
+     * @param int               $flags    Consumer flags, AMQP_NOPARAM or AMQP_AUTOACK
+     * @param bool              $forever  Should we ignore read timeout and still listen to data forever (useful for daemon scripts)
      *
      * @return mixed
      *
      * @throws SerializerException
      * @throws Exception           Any exception from pre/post-consume handlers and from exception handler
      */
-    public function listen(ConsumerInterface $consumer, $flags = AMQP_NOPARAM)
+    public function listen(ConsumerInterface $consumer, $flags = AMQP_NOPARAM, $forever = true)
     {
-        // Do not catch exceptions from Queue::listen to prevent your app from
-        // failing. If something bad happens here in most cases it's quite
-        // critical problem or crappy code.
-
         $serializer = $this->getSerializer();
 
-        $this->consume(
-            function (AMQPEnvelope $envelope, Queue $queue) use ($consumer, $serializer) {
-                if ($consumer instanceof PreConsumeInterface) {
-                    $consumer->preConsume($envelope, $queue);
-                }
+        $_orig_read_timeout = null;
 
-                $ret = null;
-                $err = null;
+        if ($forever) {
+            $_orig_read_timeout = $this->channel->getConnection()->getReadTimeout();
+            $this->getChannel()->getConnection()->setReadTimeout(0);
+        }
 
-                try {
-                    if ($envelope->getContentType() !== $serializer->getContentType()) {
-                        throw new SerializerException('Content type mismatch');
+        $e = null; // implement finally statement
+        try {
+            $this->consume(
+                function (AMQPEnvelope $envelope, Queue $queue) use ($consumer, $serializer) {
+                    if ($consumer instanceof PreConsumeInterface) {
+                        $consumer->preConsume($envelope, $queue);
                     }
 
-                    $payload = $serializer->parse($envelope->getBody());
+                    $ret = null;
+                    $err = null;
 
-                    $ret = $consumer->consume($payload, $envelope, $queue);
-                } catch (Exception $e) {
                     try {
-                        $ret = $consumer->except($e, $envelope, $queue);
+                        if ($envelope->getContentType() !== $serializer->getContentType()) {
+                            throw new SerializerException('Content type mismatch');
+                        }
+
+                        $payload = $serializer->parse($envelope->getBody());
+
+                        $ret = $consumer->consume($payload, $envelope, $queue);
                     } catch (Exception $e) {
-                        $err = $e;
+                        try {
+                            $ret = $consumer->except($e, $envelope, $queue);
+                        } catch (Exception $e) {
+                            $err = $e;
+                        }
                     }
-                }
 
-                if ($consumer instanceof PostConsumeInterface) {
-                    $consumer->postConsume($envelope, $queue);
-                }
+                    if ($consumer instanceof PostConsumeInterface) {
+                        $consumer->postConsume($envelope, $queue, $err);
+                    }
 
-                if ($err) {
-                    throw $err;
-                }
+                    if ($err) { // implement finally statement
+                        throw $err;
+                    }
 
-                return $ret;
+                    return $ret;
 
-            },
-            $flags
-        );
+                },
+                $flags
+            );
+        } catch (\Exception $e) {
+        }
+
+        if ($forever) {
+            $this->getChannel()->getConnection()->setReadTimeout($_orig_read_timeout);
+        }
+
+        if ($e) { // implement finally statement
+            throw $e;
+        }
+
+
     }
 
     public function received(AMQPEnvelope $envelope)
