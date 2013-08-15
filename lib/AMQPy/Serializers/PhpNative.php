@@ -25,7 +25,7 @@ class PhpNative implements SerializerInterface
         $parsed = @unserialize($string); // shut up but then throw an exception
 
         if (false === $parsed && self::$false !== $string) {
-            throw new SerializerException("Failed to parse value: String is not unserializeable");
+            throw new SerializerException("Failed to parse value: String is not unserializable");
         }
 
         return $parsed;

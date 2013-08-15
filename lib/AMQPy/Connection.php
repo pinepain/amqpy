@@ -86,7 +86,7 @@ class Connection extends AMQPConnection
 
         // NOTE: if new settings differs from existent, error will be thrown
         // this operation is idempotent, so if exchange or connection already exists it will not be created
-        $exchange->declare();
+        $exchange->declareExchange();
 
         return $exchange;
     }

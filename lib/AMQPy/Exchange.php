@@ -92,7 +92,7 @@ class Exchange extends AMQPExchange
         }
         // NOTE: if new settings differs from existent, error will be thrown
         // this operation is idempotent, so if exchange or connection already exists it will not be created
-        $queue->declare();
+        $queue->declareQueue();
 
         // technically, queues can be bound multiple time but with different routing keys
         if (is_array($routing_key)) {

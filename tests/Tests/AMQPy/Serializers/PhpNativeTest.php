@@ -73,7 +73,7 @@ class PhpNativeTest extends \PHPUnit_Framework_TestCase
     {
         $err   = array(
             "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
-            "Failed to parse value: String is not unserializeable"
+            "Failed to parse value: String is not unserializable"
         );
         $err_2 = array(
             "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
