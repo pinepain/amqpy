@@ -31,7 +31,7 @@ $queue->bind($exchange_name, $route_key);
 $queue->consume(
     function (AMQPEnvelope $envelope, AMQPQueue $queue) {
         $message = $envelope->getBody();
-        echo "Received {$message} and received at " . date(DATE_RFC822), PHP_EOL;
+        echo "Received '{$message}' at " . date(DATE_RFC822), PHP_EOL;
         $queue->ack($envelope->getDeliveryTag());
     }
 );
