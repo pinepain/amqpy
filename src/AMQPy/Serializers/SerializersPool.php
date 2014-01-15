@@ -9,14 +9,28 @@ class SerializersPool
 {
     private $registered = array();
 
+    public function __construct(array $serializers = array()) {
+        foreach ($serializers as $serializer) {
+            $this->register($serializer);
+        }
+    }
+
     /**
-     * @param SerializerInterface | string $serializer Serializer object or class name to create serializer from
+     * @param array | SerializerInterface | string $serializer Serializer object or class name or their list to create serializer from
      *
      * @return $this
      * @throws Exceptions\SerializersPoolException When try to register invalid serializer
      */
     public function register($serializer)
     {
+        if (is_array($serializer)) {
+            foreach ($serializer as $s) {
+                $this->register($s);
+            }
+
+            return $this;
+        }
+
         if (is_string($serializer)) {
 
             if (!class_exists($serializer)) {
@@ -26,8 +40,9 @@ class SerializersPool
             $serializer = new $serializer;
         }
 
-        if (!is_subclass_of($serializer, 'AMQPy\SerializerInterface')) {
-            throw new SerializersPoolException("Serializer class '{$serializer}' doesn't implement default serializer interface");
+        if (!is_subclass_of($serializer, 'AMQPy\Serializers\SerializerInterface')) {
+            $serializer_class = get_class($serializer);
+            throw new SerializersPoolException("Serializer class '{$serializer_class}' doesn't implement default serializer interface");
         }
 
         $this->registered[$serializer->contentType()] = $serializer;

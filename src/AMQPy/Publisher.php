@@ -37,6 +37,10 @@ class Publisher
 
         $attributes['content_type'] = $content_type;
 
+        var_dump("publish @{$routing_key} ". $message);
+        var_dump($attributes);
+        echo PHP_EOL, PHP_EOL;
+
         $this->exchange->publish($message, $routing_key, $flags, $attributes);
     }
 }

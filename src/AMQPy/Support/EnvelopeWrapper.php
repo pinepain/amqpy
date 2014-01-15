@@ -32,11 +32,15 @@ class EnvelopeWrapper
      */
     public function __construct(AMQPEnvelope $envelope, $properties_skeleton = null, $envelope_skeleton = null)
     {
-        if (!is_a($properties_skeleton, $this->properties_skeleton, true)) {
+        if (null === $properties_skeleton) {
+            $properties_skeleton = $this->properties_skeleton;
+        } elseif (!is_a($properties_skeleton, $this->properties_skeleton, true)) {
             throw new EnvelopeWrapperException("Properties skeleton should be derived from basic one ('{$this->properties_skeleton}')");
         }
 
-        if (!is_a($envelope_skeleton, $this->envelope_skeleton, true)) {
+        if (null === $envelope_skeleton) {
+            $envelope_skeleton = $this->envelope_skeleton;
+        } elseif (!is_a($envelope_skeleton, $this->envelope_skeleton, true)) {
             throw new EnvelopeWrapperException("Envelope skeleton should be derived from basic one ('{$this->envelope_skeleton}')");
         }
 
@@ -62,19 +66,19 @@ class EnvelopeWrapper
             $class = $this->properties_skeleton;
 
             $properties_map = array(
-                'content-type'     => 'contentType',
-                'content-encoding' => 'contentEncoding',
+                'content_type'     => 'contentType',
+                'content_encoding' => 'contentEncoding',
                 'headers'          => 'headers',
-                'delivery-mode'    => 'deliveryMode',
+                'delivery_mode'    => 'deliveryMode',
                 'priority'         => 'priority',
-                'correlation-id'   => 'correlationId',
-                'reply-to'         => 'ReplyTo',
+                'correlation_id'   => 'correlationId',
+                'reply_to'         => 'ReplyTo',
                 'expiration'       => 'expiration',
-                'message-id'       => 'messageId',
+                'message_id'       => 'messageId',
                 'timestamp'        => 'timestamp',
                 'type'             => 'type',
-                'user-id'          => 'userId',
-                'app-id'           => 'appId',
+                'user_id'          => 'userId',
+                'app_id'           => 'appId',
             );
 
             $properties = array();

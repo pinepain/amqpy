@@ -8,19 +8,19 @@ class BasicProperties
     const DELIVERY_MODE_NON_PERSISTENT = 1;
     const DELIVERY_MODE_PERSISTENT     = 2;
 
-    private $contentType;
-    private $contentEncoding;
+    private $content_type;
+    private $content_encoding;
     private $headers;
-    private $deliveryMode;
+    private $delivery_mode;
     private $priority;
-    private $correlationId;
-    private $replyTo;
+    private $correlation_id;
+    private $reply_to;
     private $expiration;
-    private $messageId;
+    private $message_id;
     private $timestamp;
     private $type;
-    private $userId;
-    private $appId;
+    private $user_id;
+    private $app_id;
 
     protected $properties = array(
         'content_type'     => 'content_type',
@@ -48,7 +48,7 @@ class BasicProperties
      */
     public function setAppId($appId)
     {
-        $this->appId = $appId;
+        $this->app_id = $appId;
     }
 
     /**
@@ -56,7 +56,7 @@ class BasicProperties
      */
     public function getAppId()
     {
-        return $this->appId;
+        return $this->app_id;
     }
 
     /**
@@ -64,7 +64,7 @@ class BasicProperties
      */
     public function setContentEncoding($contentEncoding)
     {
-        $this->contentEncoding = $contentEncoding;
+        $this->content_encoding = $contentEncoding;
     }
 
     /**
@@ -72,7 +72,7 @@ class BasicProperties
      */
     public function getContentEncoding()
     {
-        return $this->contentEncoding;
+        return $this->content_encoding;
     }
 
     /**
@@ -80,7 +80,7 @@ class BasicProperties
      */
     public function setContentType($contentType)
     {
-        $this->contentType = $contentType;
+        $this->content_type = $contentType;
     }
 
     /**
@@ -88,7 +88,7 @@ class BasicProperties
      */
     public function getContentType()
     {
-        return $this->contentType;
+        return $this->content_type;
     }
 
     /**
@@ -96,7 +96,7 @@ class BasicProperties
      */
     public function setCorrelationId($correlationId)
     {
-        $this->correlationId = $correlationId;
+        $this->correlation_id = $correlationId;
     }
 
     /**
@@ -104,7 +104,7 @@ class BasicProperties
      */
     public function getCorrelationId()
     {
-        return $this->correlationId;
+        return $this->correlation_id;
     }
 
     /**
@@ -112,7 +112,7 @@ class BasicProperties
      */
     public function setDeliveryMode($deliveryMode)
     {
-        $this->deliveryMode = $deliveryMode;
+        $this->delivery_mode = $deliveryMode;
     }
 
     /**
@@ -120,7 +120,7 @@ class BasicProperties
      */
     public function getDeliveryMode()
     {
-        return $this->deliveryMode;
+        return $this->delivery_mode;
     }
 
     /**
@@ -160,7 +160,7 @@ class BasicProperties
      */
     public function setMessageId($messageId)
     {
-        $this->messageId = $messageId;
+        $this->message_id = $messageId;
     }
 
     /**
@@ -168,7 +168,7 @@ class BasicProperties
      */
     public function getMessageId()
     {
-        return $this->messageId;
+        return $this->message_id;
     }
 
     /**
@@ -192,7 +192,7 @@ class BasicProperties
      */
     public function setReplyTo($replyTo)
     {
-        $this->replyTo = $replyTo;
+        $this->reply_to = $replyTo;
     }
 
     /**
@@ -200,7 +200,7 @@ class BasicProperties
      */
     public function getReplyTo()
     {
-        return $this->replyTo;
+        return $this->reply_to;
     }
 
     /**
@@ -240,7 +240,7 @@ class BasicProperties
      */
     public function setUserId($userId)
     {
-        $this->userId = $userId;
+        $this->user_id = $userId;
     }
 
     /**
@@ -248,7 +248,7 @@ class BasicProperties
      */
     public function getUserId()
     {
-        return $this->userId;
+        return $this->user_id;
     }
 
     public function toArray()
@@ -256,10 +256,14 @@ class BasicProperties
         $properties = array();
 
         foreach ($this->properties as $property) {
-            $properties[$property] = $this->$property;
+            if (!empty($this->$property)) {
+                $properties[$property] = $this->$property;
+            }
         }
 
-        $properties['headers'] = (array)$properties['headers'];
+        if (!empty($properties['headers'])) {
+            $properties['headers'] = (array)$properties['headers'];
+        }
 
         return $properties;
     }
