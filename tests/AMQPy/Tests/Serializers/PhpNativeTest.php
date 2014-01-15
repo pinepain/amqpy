@@ -1,5 +1,5 @@
 <?php
-namespace Tests\AMQPy\Serializers;
+namespace AMQPy\Tests\Serializers;
 
 use AMQPy\Serializers\PhpNative;
 use Exception;
@@ -191,10 +191,10 @@ class PhpNativeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers AMQPy\Serializers\PhpNative::getContentType
+     * @covers AMQPy\Serializers\PhpNative::contentType
      */
     public function testGetContentType()
     {
-        $this->assertSame(PhpNative::MIME, $this->object->getContentType());
+        $this->assertSame(PhpNative::MIME, $this->object->contentType());
     }
 }

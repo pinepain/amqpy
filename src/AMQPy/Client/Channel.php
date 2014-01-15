@@ -1,20 +1,16 @@
 <?php
 
-namespace AMQPy;
 
-use AMQPChannel;
+namespace AMQPy\Client;
 
-class Channel extends AMQPChannel
+
+class Channel extends \AMQPChannel
 {
-    /**
-     * @var Connection
-     */
     private $connection;
 
     public function __construct(Connection $connection)
     {
         parent::__construct($connection);
-
         $this->connection = $connection;
     }
 
@@ -22,4 +18,4 @@ class Channel extends AMQPChannel
     {
         return $this->connection;
     }
-}
+} 

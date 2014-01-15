@@ -10,6 +10,7 @@ $config = array(
         'write_timeout' => 1,
         'read_timeout'  => 0,
     ),
+
     'exchanges'   => array(
         'example.fanout' => array(
             'type'       => AMQP_EX_TYPE_FANOUT, // send messages to all queues
@@ -18,11 +19,12 @@ $config = array(
             'prefetch'   => 1, // 3 is default, but we don't allow one consumer to hold more than one message at a time
 
             'messages'   => array(
-                'flags'      => AMQP_DURABLE, // if shutdown occurred messages still be in queues
                 'attributes' => array(
-                    'expiration' => 5000, // microseconds, how long messages should be stored before deleted
+                    'delivery_mode' => AMQP_DURABLE,
+                    'expiration'    => 5000, // microseconds, how long messages should be stored before deleted
                 ),
             ),
+
             'queues'     => array(
                 'example.fanout.default' => array(
                     'flags'          => AMQP_DURABLE,

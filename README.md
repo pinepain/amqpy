@@ -15,6 +15,8 @@ If you have questions of feature request or even found a bug please create an is
 TODO
 ====
 
+[x] - drop solutions support while they are too situation-specific
+[x] - drop php < 5.5 support to use new features (final)
 [ ] - update demo
 [ ] - unit tests
 [ ] - code coverage

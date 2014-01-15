@@ -1,13 +1,13 @@
 <?php
 
-use AMQPy\ConsumerInterface;
-use AMQPy\Queue;
+use AMQPy\AbstractConsumer;
+use AMQPy\AMQPQueue;
 use AMQPy\Solutions\Generic;
 
 include 'bootstrap.php';
 
 
-class EchoConsumer implements ConsumerInterface
+class EchoConsumer extends  AbstractConsumer
 {
     private $counter = 0;
 
@@ -16,7 +16,7 @@ class EchoConsumer implements ConsumerInterface
         return $this->counter++;
     }
 
-    public function consume($payload, AMQPEnvelope $envelope, Queue $queue)
+    public function consume($payload, AMQPEnvelope $envelope, AMQPQueue $queue)
     {
 
         if (rand(0, 100) > 90) {
@@ -27,17 +27,17 @@ class EchoConsumer implements ConsumerInterface
         echo "Received payload # {$this->count()} ", gettype($payload), PHP_EOL;
     }
 
-    public function except(Exception $e, AMQPEnvelope $envelope, Queue $queue)
+    public function failure(Exception $e, AMQPEnvelope $envelope, AMQPQueue $queue)
     {
         echo "Failed to process payload # {$this->count()} due to exception: {$e->getMessage()}", PHP_EOL;
     }
 
-    public function preConsume(Queue $queue)
+    public function before(AMQPEnvelope $envelope, AMQPQueue $queue)
     {
         echo "Method ", __METHOD__, " called before consuming", PHP_EOL;
     }
 
-    public function postConsume(Queue $queue)
+    public function after(AMQPEnvelope $envelope, AMQPQueue $queue)
     {
         echo "Method ", __METHOD__, " called after consuming", PHP_EOL;
         $queue->cancel(); // stop consumer to receive envelopes from server

@@ -1,5 +1,5 @@
 <?php
-namespace Tests\AMQPy\Serializers;
+namespace AMQPy\Tests\Serializers;
 
 use AMQPy\Serializers\PlainText;
 use Exception;
@@ -148,10 +148,10 @@ class PlainTextTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\Serializers\PlainText::getContentType
+     * @covers \AMQPy\Serializers\PlainText::contentType
      */
     public function testGetContentType()
     {
-        $this->assertSame(PlainText::MIME, $this->object->getContentType());
+        $this->assertSame(PlainText::MIME, $this->object->contentType());
     }
 }

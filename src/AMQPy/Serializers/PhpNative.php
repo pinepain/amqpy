@@ -2,7 +2,6 @@
 
 namespace AMQPy\Serializers;
 
-use AMQPy\SerializerInterface;
 use AMQPy\Serializers\Exceptions\SerializerException;
 
 class PhpNative implements SerializerInterface
@@ -31,7 +30,7 @@ class PhpNative implements SerializerInterface
         return $parsed;
     }
 
-    public function getContentType()
+    public function contentType()
     {
         return self::MIME;
     }

@@ -2,7 +2,6 @@
 
 namespace AMQPy\Serializers;
 
-use AMQPy\SerializerInterface;
 use AMQPy\Serializers\Exceptions\SerializerException;
 
 class JSON implements SerializerInterface
@@ -20,9 +19,11 @@ class JSON implements SerializerInterface
         JSON_ERROR_UTF8           => 'Malformed UTF-8 characters, possibly incorrectly encoded',
     );
 
-    public function serialize($value)
+    public function serialize($value, $pretty = false)
     {
-        $value = json_encode($value); // shut up but then throw an exception
+        $options = $pretty ? JSON_PRETTY_PRINT : 0;
+
+        $value = json_encode($value, $options); // shut up but then throw an exception
 
         if ($this->isErrorOccurred()) {
             throw new SerializerException("Failed to serialize value: " . $this->getLastError());
@@ -38,10 +39,11 @@ class JSON implements SerializerInterface
         if ($this->isErrorOccurred()) {
             throw new SerializerException("Failed to parse value: " . $this->getLastError());
         }
+
         return $value;
     }
 
-    public function getContentType()
+    public function contentType()
     {
         return self::MIME;
     }
@@ -54,13 +56,7 @@ class JSON implements SerializerInterface
 
     private function getLastError()
     {
-        $error_code = json_last_error();
-
-        if (isset(self::$errors[$error_code])) {
-            $error = self::$errors[$error_code];
-        } else {
-            $error = self::JSON_UNKNOWN_ERROR;
-        }
+        $error = json_last_error_msg();
 
         return $error;
     }

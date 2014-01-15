@@ -1,14 +1,14 @@
 <?php
 
-use AMQPy\ConsumerInterface;
-use AMQPy\Queue;
+use AMQPy\AbstractConsumer;
+use AMQPy\AMQPQueue;
 use AMQPy\Solutions\Generic;
 
 include (dirname(__FILE__) . '/../../init_web.php');
 include (dirname(__FILE__) . '/../config.php');
 
 
-class DemoReceiver implements ConsumerInterface
+class DemoReceiver implements AbstractConsumer
 {
     private $counter = 0;
     private $radio_station;
@@ -42,7 +42,7 @@ class DemoReceiver implements ConsumerInterface
         return $this->radio_station;
     }
 
-    public function consume($payload, AMQPEnvelope $envelope, Queue $queue)
+    public function consume($payload, AMQPEnvelope $envelope, AMQPQueue $queue)
     {
 
         if (rand(0, 100) > 95) {
@@ -57,17 +57,17 @@ class DemoReceiver implements ConsumerInterface
         )} radio station: {$payload}, route key({$envelope->getRoutingKey()})", PHP_EOL;
     }
 
-    public function except(Exception $e, AMQPEnvelope $envelope, Queue $queue)
+    public function failure(Exception $e, AMQPEnvelope $envelope, AMQPQueue $queue)
     {
         echo "Failed to receive forecast #{$this->count()} from {$this->getRadioStation(
         )} radio station due to {$e->getMessage()}", PHP_EOL;
     }
 
-    public function preConsume(Queue $queue)
+    public function preConsume(AMQPQueue $queue)
     {
     }
 
-    public function postConsume(Queue $queue)
+    public function postConsume(AMQPQueue $queue)
     {
     }
 }

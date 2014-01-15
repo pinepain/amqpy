@@ -18,7 +18,7 @@ $channel = new AMQPChannel($connection);
 $exchange = new AMQPExchange($channel);
 $exchange->setType(AMQP_EX_TYPE_FANOUT);
 $exchange->setName($exchange_name);
-$exchange->declare(); // if exchange already exists it will not be redeclared
+$exchange->declareExchange(); // if exchange already exists it will not be redeclared
 // NOTE: if exchage with the same name but with different type or/and different
 // flags exists exception will be thrown. Same for queues.
 
@@ -28,7 +28,7 @@ $exchange->declare(); // if exchange already exists it will not be redeclared
 // queue before you'll need it
 $queue = new AMQPQueue($channel);
 $queue->setName($queue_name);
-$queue->declare();
+$queue->declareQueue();
 $queue->bind($exchange_name, $route_key);
 
 

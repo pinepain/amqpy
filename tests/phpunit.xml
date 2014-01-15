@@ -2,7 +2,7 @@
 <phpunit bootstrap="bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="AMQPy test suite">
-            <directory suffix="Test.php">./Tests</directory>
+            <directory suffix="Test.php">./AMQPy</directory>
         </testsuite>
     </testsuites>
 </phpunit>

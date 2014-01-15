@@ -1,5 +1,5 @@
 <?php
-namespace Tests\AMQPy\Serializers;
+namespace AMQPy\Tests\Serializers;
 
 use AMQPy\Serializers\JSON;
 use Exception;
@@ -37,14 +37,10 @@ class JSONTest extends \PHPUnit_Framework_TestCase
         $closure = function () {
         };
 
-        if (PHP_MAJOR_VERSION > 4 && PHP_MINOR_VERSION > 4) {
-            $warn = array(
-                "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
-                'Failed to serialize value: Unknown error'
-            );
-        } else {
-            $warn = array('PHPUnit_Framework_Error_Warning', 'json_encode(): type is unsupported, encoded as null');
-        }
+        $warn = array(
+            "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
+            'Failed to serialize value: Type is not supported'
+        );
 
         $f1 = fopen(__FILE__, 'r');
         $f2 = fopen(__FILE__, 'r');
@@ -81,7 +77,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase
     {
         $err = array(
             "\\AMQPy\\Serializers\\Exceptions\\SerializerException",
-            "Failed to parse value: Syntax error, malformed JSON"
+            "Failed to parse value: %s"
         );
 
         $closure = function () {
@@ -119,11 +115,15 @@ class JSONTest extends \PHPUnit_Framework_TestCase
             array(']', $err),
             array('"', $err),
         );
+
         return $ret;
     }
 
     /**
-     * @covers AMQPy\Serializers\PhpNative::serialize
+     * @covers       AMQPy\Serializers\JSON::serialize
+     * @covers       AMQPy\Serializers\JSON::isErrorOccurred
+     * @covers       AMQPy\Serializers\JSON::getLastError
+     *
      * @dataProvider dataProviderSerialize
      *
      */
@@ -139,6 +139,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase
             if (!empty($error)) {
                 $this->assertInstanceOf($error[0], $e);
                 $this->assertStringMatchesFormat($error[1], $e->getMessage());
+
                 return;
             } else {
                 throw $e;
@@ -151,8 +152,9 @@ class JSONTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers AMQPy\Serializers\PhpNative::parse
-     *
+     * @covers       AMQPy\Serializers\JSON::parse
+     * @covers       AMQPy\Serializers\JSON::isErrorOccurred
+     * @covers       AMQPy\Serializers\JSON::getLastError
      * @dataProvider dataProviderParse
      */
     public function testParse($value, $error, $output = null)
@@ -163,6 +165,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase
             if (!empty($error)) {
                 $this->assertInstanceOf($error[0], $e);
                 $this->assertStringMatchesFormat($error[1], $e->getMessage());
+
                 return;
             } else {
                 throw $e;
@@ -173,10 +176,10 @@ class JSONTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers AMQPy\Serializers\PhpNative::getContentType
+     * @covers AMQPy\Serializers\JSON::contentType
      */
     public function testGetContentType()
     {
-        $this->assertSame(JSON::MIME, $this->object->getContentType());
+        $this->assertSame(JSON::MIME, $this->object->contentType());
     }
 }

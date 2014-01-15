@@ -2,7 +2,6 @@
 
 namespace AMQPy\Serializers;
 
-use AMQPy\SerializerInterface;
 use AMQPy\Serializers\Exceptions\SerializerException;
 
 class PlainText implements SerializerInterface
@@ -27,7 +26,7 @@ class PlainText implements SerializerInterface
         return $value;
     }
 
-    public function getContentType()
+    public function contentType()
     {
         return self::MIME;
     }

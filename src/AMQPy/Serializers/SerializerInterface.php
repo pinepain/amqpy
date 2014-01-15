@@ -1,6 +1,6 @@
 <?php
 
-namespace AMQPy;
+namespace AMQPy\Serializers;
 
 use AMQPy\Serializers\Exceptions\SerializerException;
 
@@ -33,5 +33,5 @@ interface SerializerInterface
      *
      * @return string MIME type according to IANA, RFC 2046, RFC 6648 and RFC 4288
      */
-    public function getContentType();
+    public function contentType();
 }
