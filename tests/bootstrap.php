@@ -5,4 +5,7 @@ if (!file_exists($file)) {
     throw new RuntimeException('Install dependencies to run test suite.');
 }
 
-$autoload = require $file;
+$loader = require $file;
+
+$loader->add('AMQPy\Helpers', __DIR__);
+$loader->add('AMQPy\Tests', __DIR__);

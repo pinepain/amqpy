@@ -4,19 +4,30 @@ AMQPy
 
 Lightweight AMQP framework built on top of the [php-amqp](https://github.com/pdezwart/php-amqp) extension.
 
+Requirementes
+-------------
+
+ * [php-amqp](http://pecl.php.net/package/amqp) >= 1.3.0 (with [librabbitmq]() >= 0.4.1)
+
 It is aimed to provide painless as much as possible AMQP integration in your applications.
 
-You can find some examples in `/demo` folder but they are incomplete and non-documented now, sorry guys.
+You can find some examples in `/demo` folder but they are incomplete and non-documented now (and probably doesn't work now),
+sorry guys.
 
-If you have questions of feature request or even found a bug please create an issue. 
+If you have questions of feature request or even found a bug (wow! you are really awesome) please create an issue
+or even send pull request or old-style patch.
 
 *NOTE* demos are completely outdated
 
 TODO
 ====
 
-[x] - drop solutions support while they are too situation-specific
-[x] - drop php < 5.5 support to use new features (final)
+[ ] - finish redesign
 [ ] - update demo
 [ ] - unit tests
+[ ] - laravel bundle
 [ ] - code coverage
+
+[x] - add getChannel() and getConnection() methods to AMQPChannel, AMQPQueue and AMQPQueue
+[x] - drop solutions support while they are too situation-specific
+[x] - drop php < 5.5 support to use new features (final)

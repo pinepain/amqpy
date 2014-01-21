@@ -33,5 +33,5 @@ interface SerializerInterface
      *
      * @return string MIME type according to IANA, RFC 2046, RFC 6648 and RFC 4288
      */
-    public function contentType();
+    public function getContentType();
 }

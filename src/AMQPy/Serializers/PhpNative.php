@@ -30,7 +30,7 @@ class PhpNative implements SerializerInterface
         return $parsed;
     }
 
-    public function contentType()
+    public function getContentType()
     {
         return self::MIME;
     }

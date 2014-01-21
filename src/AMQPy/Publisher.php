@@ -4,7 +4,7 @@
 namespace AMQPy;
 
 use AMQPExchange;
-use AMQPy\Client\BasicProperties;
+use AMQPy\Client\Properties;
 use AMQPy\Serializers\SerializersPool;
 
 class Publisher
@@ -28,7 +28,7 @@ class Publisher
         return $this->serializers;
     }
 
-    public function publish($message, $routing_key, BasicProperties $properties, $flags = AMQP_NOPARAM)
+    public function publish($message, $routing_key, Properties $properties, $flags = AMQP_NOPARAM)
     {
         $content_type = $properties->getContentType() ? : 'text/plain'; // default content type;
 

@@ -148,10 +148,10 @@ class PlainTextTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\Serializers\PlainText::contentType
+     * @covers \AMQPy\Serializers\PlainText::getContentType
      */
     public function testGetContentType()
     {
-        $this->assertSame(PlainText::MIME, $this->object->contentType());
+        $this->assertSame(PlainText::MIME, $this->object->getContentType());
     }
 }

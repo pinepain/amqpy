@@ -3,8 +3,8 @@
 namespace AMQPy;
 
 use AMQPEnvelope;
+use AMQPQueue;
 use AMQPy\Client\Delivery;
-use AMQPy\Client\Queue;
 use AMQPy\Serializers\Exceptions\SerializerException;
 use AMQPy\Serializers\SerializersPool;
 use AMQPy\Support\EnvelopeWrapper;
@@ -17,7 +17,7 @@ class Listenter
 
     private $read_timeout;
 
-    public function __construct(Queue $queue, SerializersPool $serializers)
+    public function __construct(AMQPQueue $queue, SerializersPool $serializers)
     {
         $this->serializers = $serializers;
         $this->queue       = $queue;
@@ -101,34 +101,34 @@ class Listenter
 
             $this->queue->consume(
 
-                function (AMQPEnvelope $envelope /*, AMQPQueue $queue*/) use ($consumer, $serializers) {
+                        function (AMQPEnvelope $envelope /*, AMQPQueue $queue*/) use ($consumer, $serializers) {
 
-                    $wrapper  = new EnvelopeWrapper($envelope);
-                    $delivery = new Delivery($wrapper->getBody(), $wrapper->getEnvelope(), $wrapper->getProperties());
+                            $wrapper  = new EnvelopeWrapper($envelope);
+                            $delivery = new Delivery($wrapper->getBody(), $wrapper->getEnvelope(), $wrapper->getProperties());
 
-                    $consumer->before($delivery, $this);
+                            $consumer->before($delivery, $this);
 
-                    $consumer_error = null;
+                            $consumer_error = null;
 
-                    // TODO:
-                    // +begin +before() -> +consume() -> {ok ? after() : failure()} -> always() -> end()
-                    try {
-                        $payload = $serializers->get($delivery->getProperties()->getContentType())
-                            ->parse($envelope->getBody());
+                            // TODO:
+                            // +begin +before() -> +consume() -> {ok ? after() : failure()} -> always() -> end()
+                            try {
+                                $payload = $serializers->get($delivery->getProperties()->getContentType())
+                                                       ->parse($envelope->getBody());
 
-                        $consumer->consume($payload, $delivery, $this);
-                    } catch (Exception $e) {
-                        $consumer_error = $e;
-                        $consumer->failure($e, $delivery, $this);
-                        throw $e;
-                    } finally {
-                        $consumer->after($delivery, $this, $consumer_error);
+                                $consumer->consume($payload, $delivery, $this);
+                            } catch (Exception $e) {
+                                $consumer_error = $e;
+                                $consumer->failure($e, $delivery, $this);
+                                throw $e;
+                            } finally {
+                                $consumer->after($delivery, $this, $consumer_error);
 
-                        return $consumer->active(); // amqp consumer will return processing thread back only when FALSE returned
-                    }
+                                return $consumer->active(); // amqp consumer will return processing thread back only when FALSE returned
+                            }
 
-                },
-                $auto_ack ? AMQP_AUTOACK : AMQP_NOPARAM
+                        },
+                            $auto_ack ? AMQP_AUTOACK : AMQP_NOPARAM
             );
         } catch (Exception $e) {
             $outside_error = $e;

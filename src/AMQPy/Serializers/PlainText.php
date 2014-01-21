@@ -26,7 +26,7 @@ class PlainText implements SerializerInterface
         return $value;
     }
 
-    public function contentType()
+    public function getContentType()
     {
         return self::MIME;
     }

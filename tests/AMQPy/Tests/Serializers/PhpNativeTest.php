@@ -191,10 +191,10 @@ class PhpNativeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers AMQPy\Serializers\PhpNative::contentType
+     * @covers AMQPy\Serializers\PhpNative::getContentType
      */
     public function testGetContentType()
     {
-        $this->assertSame(PhpNative::MIME, $this->object->contentType());
+        $this->assertSame(PhpNative::MIME, $this->object->getContentType());
     }
 }

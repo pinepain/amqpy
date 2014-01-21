@@ -176,10 +176,10 @@ class JSONTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers AMQPy\Serializers\JSON::contentType
+     * @covers AMQPy\Serializers\JSON::getContentType
      */
     public function testGetContentType()
     {
-        $this->assertSame(JSON::MIME, $this->object->contentType());
+        $this->assertSame(JSON::MIME, $this->object->getContentType());
     }
 }

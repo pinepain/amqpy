@@ -9,7 +9,7 @@ class Delivery
     private $envelope;
     private $properties;
 
-    public function __construct($body, Envelope $envelope, BasicProperties $properties)
+    public function __construct($body, Envelope $envelope, Properties $properties)
     {
         $this->body       = $body;
         $this->envelope   = $envelope;
@@ -33,7 +33,7 @@ class Delivery
     }
 
     /**
-     * @return \AMQPy\Client\BasicProperties
+     * @return \AMQPy\Client\Properties
      */
     public function getProperties()
     {

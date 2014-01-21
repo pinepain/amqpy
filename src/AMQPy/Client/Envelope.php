@@ -9,6 +9,12 @@ class Envelope
     private $delivery_tag;
     private $redeliver;
 
+    /**
+     * @param string      $exchange
+     * @param string      $routing_key
+     * @param null|string $delivery_tag
+     * @param null|bool   $redeliver
+     */
     public function __construct($exchange, $routing_key, $delivery_tag = null, $redeliver = null)
     {
         $this->delivery_tag = $delivery_tag;

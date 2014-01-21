@@ -7,7 +7,7 @@ use AMQPy\Serializers\Exceptions\SerializersPoolException;
 
 class SerializersPool
 {
-    private $registered = array();
+    private $registered = [];
 
     public function __construct(array $serializers = array()) {
         foreach ($serializers as $serializer) {
@@ -40,12 +40,17 @@ class SerializersPool
             $serializer = new $serializer;
         }
 
+        if (!is_object($serializer)) {
+            $serializer_type = gettype($serializer);
+            throw new SerializersPoolException("Serializer should be object or class name, scalar '{$serializer_type}' given instead");
+        }
+
         if (!is_subclass_of($serializer, 'AMQPy\Serializers\SerializerInterface')) {
             $serializer_class = get_class($serializer);
             throw new SerializersPoolException("Serializer class '{$serializer_class}' doesn't implement default serializer interface");
         }
 
-        $this->registered[$serializer->contentType()] = $serializer;
+        $this->registered[$serializer->getContentType()] = $serializer;
 
         return $this;
     }
@@ -57,7 +62,7 @@ class SerializersPool
         return $this;
     }
 
-    public function registered($serializer)
+    public function isRegistered($serializer)
     {
         return isset($this->registered[$serializer]);
     }
@@ -70,7 +75,7 @@ class SerializersPool
      */
     public function get($mime)
     {
-        if (!$this->registered($mime)) {
+        if (!$this->isRegistered($mime)) {
             throw new SerializersPoolException("There are no registered serializers for '{$mime}' type");
         }
 
