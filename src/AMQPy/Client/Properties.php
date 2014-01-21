@@ -3,6 +3,7 @@
 namespace AMQPy\Client;
 
 use Traversable;
+use AMQPy\Client\Exceptions\PropertiesException;
 
 // http://www.rabbitmq.com/resources/specs/amqp-xml-doc0-9-1.pdf Section 1.8.2 Properties
 class Properties

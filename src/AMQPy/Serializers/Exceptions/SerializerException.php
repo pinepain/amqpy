@@ -2,8 +2,8 @@
 
 namespace AMQPy\Serializers\Exceptions;
 
-use Exception;
+use AMQPy\Exceptions\AMQPyException;
 
-class SerializerException extends Exception
+class SerializerException extends AMQPyException
 {
 }

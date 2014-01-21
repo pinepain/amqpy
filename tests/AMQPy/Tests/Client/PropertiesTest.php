@@ -155,7 +155,7 @@ class PropertiesTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers AMQPy\Client\Properties::setHeaders
      *
-     * @expectedException \AMQPy\Client\PropertiesException
+     * @expectedException \AMQPy\Client\Exceptions\PropertiesException
      * @expectedExceptionMessage Headers should be array or iterable, stdClass object given instead
      *
      */
@@ -167,7 +167,7 @@ class PropertiesTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers AMQPy\Client\Properties::setHeaders
      *
-     * @expectedException \AMQPy\Client\PropertiesException
+     * @expectedException \AMQPy\Client\Exceptions\PropertiesException
      * @expectedExceptionMessage Headers should be array or iterable, scalar string given instead
      *
      */

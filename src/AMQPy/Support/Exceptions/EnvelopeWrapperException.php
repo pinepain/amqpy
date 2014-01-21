@@ -1,7 +1,7 @@
 <?php
 
 
-namespace AMQPy\Support;
+namespace AMQPy\Support\Exceptions;
 
 
 class EnvelopeWrapperException extends  \Exception{

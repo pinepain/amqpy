@@ -4,6 +4,7 @@
 namespace AMQPy\Support;
 
 use AMQPEnvelope;
+use AMQPy\Support\Exceptions\EnvelopeWrapperException;
 
 class EnvelopeWrapper
 {
@@ -13,7 +14,7 @@ class EnvelopeWrapper
     private $original;
 
     /**
-     * @var \AMQPy\Client\BasicProperties
+     * @var \AMQPy\Client\Properties
      */
     private $properties;
 
