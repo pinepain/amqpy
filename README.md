@@ -25,8 +25,10 @@ TODO
 [ ] - finish redesign
 [ ] - update demo
 [ ] - unit tests
-[ ] - laravel bundle
 [ ] - code coverage
+[ ] - C.R.A.P. index review
+[ ] - laravel bundle
+[ ] - code review
 
 [x] - add getChannel() and getConnection() methods to AMQPChannel, AMQPQueue and AMQPQueue
 [x] - drop solutions support while they are too situation-specific

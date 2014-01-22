@@ -6,7 +6,7 @@ use AMQPy\Serializers\Exceptions\SerializerException;
 
 class PlainText implements SerializerInterface
 {
-    const MIME = 'plain/text';
+    const MIME = 'text/plain';
 
     public function serialize($value)
     {

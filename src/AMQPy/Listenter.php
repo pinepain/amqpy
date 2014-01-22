@@ -7,20 +7,22 @@ use AMQPQueue;
 use AMQPy\Client\Delivery;
 use AMQPy\Serializers\Exceptions\SerializerException;
 use AMQPy\Serializers\SerializersPool;
-use AMQPy\Support\EnvelopeWrapper;
+use AMQPy\Support\DeliveryBuilder;
 use Exception;
 
 class Listenter
 {
     private $queue;
     private $serializers;
+    private $builder;
 
     private $read_timeout;
 
-    public function __construct(AMQPQueue $queue, SerializersPool $serializers)
+    public function __construct(AMQPQueue $queue, SerializersPool $serializers, DeliveryBuilder $builder)
     {
         $this->serializers = $serializers;
         $this->queue       = $queue;
+        $this->builder     = $builder;
     }
 
     public function getQueue()
@@ -33,30 +35,37 @@ class Listenter
         return $this->serializers;
     }
 
+    public function getBuilder()
+    {
+        return $this->builder;
+    }
+
     public function isEndless()
     {
-        return !$this->queue->getChannel()->getConnection()->getReadTimeout();
+        return !$this->queue->getConnection()->getReadTimeout();
     }
 
-    public function setEndlessOn()
+    public function setEndless($is_endless)
     {
-        if (null === $this->read_timeout) {
-            if ($this->isEndless()) {
-                $this->read_timeout = 0;
-            } else {
-                $this->read_timeout = $this->queue->getChannel()->getConnection()->getReadTimeout();
-                $this->queue->getChannel()->getConnection()->setReadTimeout(0);
+        $internal_is_endless = $this->isEndless();
+
+        $is_endless = (bool)$is_endless;
+
+        if ($internal_is_endless === $is_endless) {
+            return $is_endless;
+        }
+
+        if ($is_endless) {
+            $this->read_timeout = $this->queue->getConnection()->getReadTimeout();
+            $this->queue->getConnection()->setReadTimeout(0);
+        } else {
+            if ($this->read_timeout) {
+                $this->queue->getConnection()->setReadTimeout($this->read_timeout);
+                $this->read_timeout = null;
             }
         }
-    }
 
-    public function setEndlessOff()
-    {
-        if ($this->read_timeout) {
-            $this->queue->getChannel()->getConnection()->setReadTimeout($this->read_timeout);
-        }
-
-        $this->read_timeout = null;
+        return $is_endless;
     }
 
     public function get($auto_ack = false)
@@ -64,9 +73,7 @@ class Listenter
         $envelope = $this->queue->get($auto_ack ? AMQP_AUTOACK : AMQP_NOPARAM);
 
         if ($envelope) {
-            $wrapper  = new EnvelopeWrapper($envelope);
-            $delivery = new Delivery($wrapper->getBody(), $wrapper->getEnvelope(), $wrapper->getProperties());
-
+            $delivery = $this->builder->build($envelope);
         } else {
             $delivery = null;
         }
@@ -95,47 +102,63 @@ class Listenter
         $serializers = $this->serializers;
 
         $outside_error = null;
-        try {
 
+        try {
             $consumer->begin($this);
 
             $this->queue->consume(
-
                         function (AMQPEnvelope $envelope /*, AMQPQueue $queue*/) use ($consumer, $serializers) {
+                            $delivery = $this->builder->build($envelope);
+                            $this->feed($delivery, $consumer);
 
-                            $wrapper  = new EnvelopeWrapper($envelope);
-                            $delivery = new Delivery($wrapper->getBody(), $wrapper->getEnvelope(), $wrapper->getProperties());
-
-                            $consumer->before($delivery, $this);
-
-                            $consumer_error = null;
-
-                            // TODO:
-                            // +begin +before() -> +consume() -> {ok ? after() : failure()} -> always() -> end()
-                            try {
-                                $payload = $serializers->get($delivery->getProperties()->getContentType())
-                                                       ->parse($envelope->getBody());
-
-                                $consumer->consume($payload, $delivery, $this);
-                            } catch (Exception $e) {
-                                $consumer_error = $e;
-                                $consumer->failure($e, $delivery, $this);
-                                throw $e;
-                            } finally {
-                                $consumer->after($delivery, $this, $consumer_error);
-
-                                return $consumer->active(); // amqp consumer will return processing thread back only when FALSE returned
-                            }
-
-                        },
-                            $auto_ack ? AMQP_AUTOACK : AMQP_NOPARAM
+                            return $consumer->active();
+                        }, $auto_ack ? AMQP_AUTOACK : AMQP_NOPARAM
             );
         } catch (Exception $e) {
             $outside_error = $e;
-            throw $e;
-        } finally {
-            $consumer->end($this, $outside_error);
         }
+
+        try {
+            $this->queue->cancel();
+        } catch (Exception $e) {
+        }
+
+        try {
+            $consumer->end($this, $outside_error);
+        } finally {
+
+            if ($outside_error) {
+                throw $outside_error;
+            }
+        }
+    }
+
+    public function feed(Delivery $delivery, AbstractConsumer $consumer)
+    {
+        $consumer->before($delivery, $this);
+
+        $consumer_exception = null;
+        $consume_result     = null;
+        $consume_payload    = null;
+
+        // TODO:
+        // +begin +before() -> +consume() -> {ok ? after() : failure()} -> always() -> end()
+        try {
+            $consume_payload = $this->serializers->get($delivery->getProperties()->getContentType())
+                                                 ->parse($delivery->getBody());
+
+            $consume_result = $consumer->consume($consume_payload, $delivery, $this);
+        } catch (Exception $e) {
+            $consumer_exception = $e;
+        }
+
+        if ($consumer_exception) {
+            $consumer->failure($consumer_exception, $delivery, $this);
+        } else {
+            $consumer->after($consume_result, $delivery, $this);
+        }
+
+        $consumer->always($consume_result, $consume_payload, $delivery, $this, $consumer_exception);
     }
 
     public function accept(Delivery $delivery)
@@ -151,10 +174,5 @@ class Listenter
     public function drop(Delivery $delivery)
     {
         $this->queue->nack($delivery->getEnvelope()->getDeliveryTag());
-    }
-
-    public function stop()
-    {
-        $this->queue->cancel();
     }
 }

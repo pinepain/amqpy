@@ -11,12 +11,12 @@ abstract class AbstractConsumer
 
     public function begin(Listenter $listener)
     {
-        $listener->setEndlessOn();
+        $listener->setEndless(true);
     }
 
     public function end(Listenter $listener, Exception $exception = null)
     {
-        $listener->setEndlessOff();
+        $listener->setEndless(false);
     }
 
     /**
@@ -40,9 +40,22 @@ abstract class AbstractConsumer
     }
 
     /**
-     * Post-consume hook. Invoked after each envelope consumed regardless to any error
+     * Post-consume hook. Invoked after each envelope consumed sucessfully
      */
-    public function after(Delivery $delivery, Listenter $listener, Exception $exception = null)
+    public function after($result, Delivery $delivery, Listenter $listener)
+    {
+    }
+
+    /**
+     * Post-consume hook. Invoked after failure() or after() method.
+     *
+     * @param           $result
+     * @param           $payload
+     * @param           $delivery
+     * @param Listenter $listener
+     * @param Exception $exception
+     */
+    public function always($result, $payload, $delivery, Listenter $listener, Exception $exception = null)
     {
     }
 

@@ -28,18 +28,22 @@ class Publisher
         return $this->serializers;
     }
 
-    public function publish($message, $routing_key, Properties $properties, $flags = AMQP_NOPARAM)
+    public function publish($message, $routing_key, Properties $properties = null, $flags = AMQP_NOPARAM)
     {
-        $content_type = $properties->getContentType() ? : 'text/plain'; // default content type;
+        $content_type = 'text/plain';
+        $attributes   = [];
 
-        $message    = $this->serializers->get($content_type)->serialize($message);
-        $attributes = $properties->toArray();
+        if ($properties) {
+            if ($properties->getContentType()) {
+                $content_type = $properties->getContentType();
+            }
+
+            $attributes = $properties->toArray();
+        }
+
+        $message = $this->serializers->get($content_type)->serialize($message);
 
         $attributes['content_type'] = $content_type;
-
-        var_dump("publish @{$routing_key} ". $message);
-        var_dump($attributes);
-        echo PHP_EOL, PHP_EOL;
 
         $this->exchange->publish($message, $routing_key, $flags, $attributes);
     }

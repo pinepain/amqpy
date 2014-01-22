@@ -4,7 +4,6 @@
 namespace AMQPy\Support;
 
 use AMQPEnvelope;
-use AMQPy\Support\Exceptions\EnvelopeWrapperException;
 
 class EnvelopeWrapper
 {
@@ -23,30 +22,16 @@ class EnvelopeWrapper
      */
     private $envelope;
 
-    private $properties_skeleton = '\AMQPy\Client\BasicProperties';
-    private $envelope_skeleton = '\AMQPy\Client\Envelope';
+    private $properties_skeleton;
+    private $envelope_skeleton;
 
     /**
      * @param AMQPEnvelope $envelope
      * @param string       $properties_skeleton
      * @param string       $envelope_skeleton
-     *
-     * @throws EnvelopeWrapperException When properties or envelope skeleton classes aren't inherit basic classes
      */
-    public function __construct(AMQPEnvelope $envelope, $properties_skeleton = null, $envelope_skeleton = null)
+    public function __construct(AMQPEnvelope $envelope, $properties_skeleton = 'AMQPy\Client\Properties', $envelope_skeleton = 'AMQPy\Client\Envelope')
     {
-        if (null === $properties_skeleton) {
-            $properties_skeleton = $this->properties_skeleton;
-        } elseif (!is_a($properties_skeleton, $this->properties_skeleton, true)) {
-            throw new EnvelopeWrapperException("Properties skeleton class should be '{$this->properties_skeleton}' or inherited from it");
-        }
-
-        if (null === $envelope_skeleton) {
-            $envelope_skeleton = $this->envelope_skeleton;
-        } elseif (!is_a($envelope_skeleton, $this->envelope_skeleton, true)) {
-            throw new EnvelopeWrapperException("Envelope skeleton class should be '{$this->envelope_skeleton}' or inherited from it");
-        }
-
         $this->original = $envelope;
 
         $this->properties_skeleton = $properties_skeleton;
@@ -69,27 +54,25 @@ class EnvelopeWrapper
             $class = $this->properties_skeleton;
 
             $properties_map = [
-                'content_type'     => 'contentType',
-                'content_encoding' => 'contentEncoding',
-                'headers'          => 'headers',
-                'delivery_mode'    => 'deliveryMode',
-                'priority'         => 'priority',
-                'correlation_id'   => 'correlationId',
-                'reply_to'         => 'replyTo',
-                'expiration'       => 'expiration',
-                'message_id'       => 'messageId',
-                'timestamp'        => 'timestamp',
-                'type'             => 'type',
-                'user_id'          => 'userId',
-                'app_id'           => 'appId',
+                'content_type'     => 'getContentType',
+                'content_encoding' => 'getContentEncoding',
+                'headers'          => 'getHeaders',
+                'delivery_mode'    => 'getDeliveryMode',
+                'priority'         => 'getPriority',
+                'correlation_id'   => 'getCorrelationId',
+                'reply_to'         => 'getReplyTo',
+                'expiration'       => 'getExpiration',
+                'message_id'       => 'getMessageId',
+                'timestamp'        => 'getTimestamp',
+                'type'             => 'getType',
+                'user_id'          => 'getUserId',
+                'app_id'           => 'getAppId',
             ];
 
             $properties = [];
 
-            foreach ($properties_map as $key => $parameter) {
-                $parameter_getter = 'get' . ucfirst($parameter);
-
-                $properties[$key] = $this->original->$parameter_getter();
+            foreach ($properties_map as $key => $getter) {
+                $properties[$key] = $this->original->$getter();
             }
 
             $this->properties = new $class($properties);
@@ -109,7 +92,6 @@ class EnvelopeWrapper
                 $this->original->getDeliveryTag(),
                 $this->original->isRedelivery()
             );
-
         }
 
         return $this->envelope;
