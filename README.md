@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=master)](https://travis-ci.org/zaq178miami/amqpy)
+[![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=redesign)](https://travis-ci.org/zaq178miami/amqpy)
 AMQPy
 =====
 
@@ -7,7 +7,7 @@ Lightweight AMQP framework built on top of the [php-amqp](https://github.com/pde
 Requirementes
 -------------
 
- * [php-amqp](http://pecl.php.net/package/amqp) >= 1.3.0 (with [librabbitmq]() >= 0.4.1)
+ * [php-amqp](http://pecl.php.net/package/amqp) >= 1.4.0 (for now master branch only) (with [librabbitmq]() >= 0.4.1)
 
 It is aimed to provide painless as much as possible AMQP integration in your applications.
 
@@ -22,14 +22,16 @@ or even send pull request or old-style patch.
 TODO
 ====
 
-[ ] - finish redesign
+[ ] - update readme
 [ ] - update demo
-[ ] - unit tests
-[ ] - code coverage
-[ ] - C.R.A.P. index review
 [ ] - laravel bundle
 [ ] - code review
+[ ] - don't forget to change travis image back to master [![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=master)](https://travis-ci.org/zaq178miami/amqpy)
 
+[x] - unit tests
+[x] - code coverage
+[x] - C.R.A.P. index review
+[x] - finish redesign
 [x] - add getChannel() and getConnection() methods to AMQPChannel, AMQPQueue and AMQPQueue
 [x] - drop solutions support while they are too situation-specific
 [x] - drop php < 5.5 support to use new features (final)

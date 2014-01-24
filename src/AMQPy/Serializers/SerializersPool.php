@@ -32,7 +32,6 @@ class SerializersPool
         }
 
         if (is_string($serializer)) {
-
             if (!class_exists($serializer)) {
                 throw new SerializersPoolException("Serializer class '{$serializer}' not found");
             }
@@ -55,16 +54,16 @@ class SerializersPool
         return $this;
     }
 
-    public function deregister($serializer)
+    public function deregister($mime)
     {
-        unset($this->registered[$serializer]);
+        unset($this->registered[$mime]);
 
         return $this;
     }
 
-    public function isRegistered($serializer)
+    public function isRegistered($mime)
     {
-        return isset($this->registered[$serializer]);
+        return isset($this->registered[$mime]);
     }
 
     /**
