@@ -47,15 +47,9 @@ abstract class AbstractListenter
 
     public function setEndless($is_endless)
     {
-        $internal_is_endless = $this->isEndless();
-
-        if (!$this->read_timeout && $internal_is_endless) {
-            return true;
-        }
-
         $is_endless = (bool)$is_endless;
 
-        if ($internal_is_endless === $is_endless) {
+        if ($this->isEndless() === $is_endless) {
             return $is_endless;
         }
 

@@ -30,11 +30,11 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $connection;
+    private $connection_stub;
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $channel;
+    private $channel_stub;
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
@@ -46,7 +46,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $properties;
+    private $properties_stub;
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
@@ -58,22 +58,19 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->queue_stub    = $this->getMockBuilder('\AMQPQueue')
-                                    ->setMethods(['getConnection', 'getChannel', 'get', 'consume', 'cancel', 'ack', 'nack'])
-                                    ->disableOriginalConstructor()->getMock();
-        $this->envelope_stub = $this->getMockBuilder('\AMQPEnvelope')
-                                    ->disableOriginalConstructor()->getMock();
-        $this->connection    = $this->getMockBuilder('\AMQPConnection')
-                                    ->disableOriginalConstructor()->getMock();
-        $this->channel       = $this->getMockBuilder('\AMQPChannel')
-                                    ->disableOriginalConstructor()->getMock();
-        $this->builder_stub  = $this->getMockBuilder('\AMQPy\Support\DeliveryBuilder')
-                                    ->disableOriginalConstructor()->getMock();
-        $this->properties    = $this->getMockBuilder('\AMQPy\Client\Properties')
-                                    ->disableOriginalConstructor()->getMock();
-
-        $this->serializer_stub       = $this->getMock('\AMQPy\Serializers\SerializerInterface');
-        $this->serializers_pool_stub = $this->getMock('\AMQPy\Serializers\SerializersPool');
+        $this->queue_stub      = $this->getMockBuilder('\AMQPQueue')
+                                      ->setMethods(['getConnection', 'getChannel', 'get', 'consume', 'cancel', 'ack', 'nack'])
+                                      ->disableOriginalConstructor()->getMock();
+        $this->envelope_stub   = $this->getMockBuilder('\AMQPEnvelope')
+                                      ->disableOriginalConstructor()->getMock();
+        $this->connection_stub = $this->getMockBuilder('\AMQPConnection')
+                                      ->disableOriginalConstructor()->getMock();
+        $this->channel_stub    = $this->getMockBuilder('\AMQPChannel')
+                                      ->disableOriginalConstructor()->getMock();
+        $this->builder_stub    = $this->getMockBuilder('\AMQPy\Support\DeliveryBuilder')
+                                      ->disableOriginalConstructor()->getMock();
+        $this->properties_stub = $this->getMockBuilder('\AMQPy\Client\Properties')
+                                      ->disableOriginalConstructor()->getMock();
 
         $this->client_envelope_stub = $this->getMockBuilder('\AMQPy\Client\Envelope')
                                            ->disableOriginalConstructor()
@@ -88,7 +85,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
 
         $this->delivery_stub->expects($this->any())
                             ->method('getProperties')
-                            ->will($this->returnValue($this->properties));
+                            ->will($this->returnValue($this->properties_stub));
 
         $this->delivery_stub->expects($this->any())
                             ->method('getBody')
@@ -100,40 +97,40 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
 
         $connection_read_timeout = 0;
 
-        $this->channel->expects($this->any())
-                      ->method('isConnected')
-                      ->will($this->returnValue(true));
+        $this->channel_stub->expects($this->any())
+                           ->method('isConnected')
+                           ->will($this->returnValue(true));
 
-        $this->connection->expects($this->any())
-                         ->method('getReadTimeout')
-                         ->will(
-                         $this->returnCallback(
-                              function () use (&$connection_read_timeout) {
-                                  return $connection_read_timeout;
-                              }
-                         )
+        $this->connection_stub->expects($this->any())
+                              ->method('getReadTimeout')
+                              ->will(
+                              $this->returnCallback(
+                                   function () use (&$connection_read_timeout) {
+                                       return $connection_read_timeout;
+                                   }
+                              )
             );
 
-        $this->connection->expects($this->any())
-                         ->method('setReadTimeout')
-                         ->will(
-                         $this->returnCallback(
-                              function ($read_timeout) use (&$connection_read_timeout) {
-                                  $connection_read_timeout = $read_timeout;
+        $this->connection_stub->expects($this->any())
+                              ->method('setReadTimeout')
+                              ->will(
+                              $this->returnCallback(
+                                   function ($read_timeout) use (&$connection_read_timeout) {
+                                       $connection_read_timeout = $read_timeout;
 
-                                  return true;
-                              }
-                         )
+                                       return true;
+                                   }
+                              )
             );
 
 
         $this->queue_stub->expects($this->any())
                          ->method('getConnection')
-                         ->will($this->returnValue($this->connection));
+                         ->will($this->returnValue($this->connection_stub));
 
         $this->queue_stub->expects($this->any())
                          ->method('getChannel')
-                         ->will($this->returnValue($this->channel));
+                         ->will($this->returnValue($this->channel_stub));
 
         $this->queue_stub->expects($this->any())
                          ->method('cancel')
@@ -143,13 +140,15 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
                          ->method('consume')
                          ->will(
                          $this->returnCallback(
-                              function ($callback, $flags) {
+                              function ($callback) {
                                   while (false !== $res = call_user_func($callback, $this->envelope_stub, $this->queue_stub)) {
                                   }
 
                               }
                          )
             );
+
+        $this->serializer_stub = $this->getMock('\AMQPy\Serializers\SerializerInterface');
 
         $this->serializer_stub->expects($this->any())
                               ->method('parse')
@@ -161,7 +160,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
                               )
             );
 
-
+        $this->serializers_pool_stub = $this->getMock('\AMQPy\Serializers\SerializersPool');
         $this->serializers_pool_stub->expects($this->any())
                                     ->method('get')
                                     ->will($this->returnValue($this->serializer_stub));

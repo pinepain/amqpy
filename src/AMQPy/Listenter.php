@@ -15,8 +15,6 @@ class Listenter extends AbstractListenter
         $consume_result     = null;
         $consume_payload    = null;
 
-        // TODO:
-        // +begin +before() -> +consume() -> {ok ? after() : failure()} -> always() -> end()
         try {
             $consume_payload = $this->getSerializers()
                                     ->get($delivery->getProperties()->getContentType())

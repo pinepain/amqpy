@@ -51,11 +51,11 @@ abstract class AbstractConsumer
      *
      * @param                   $result
      * @param                   $payload
-     * @param                   $delivery
+     * @param Delivery          $delivery
      * @param AbstractListenter $listener
      * @param Exception         $exception
      */
-    public function always($result, $payload, $delivery, AbstractListenter $listener, Exception $exception = null)
+    public function always($result, $payload, Delivery $delivery, AbstractListenter $listener, Exception $exception = null)
     {
     }
 
