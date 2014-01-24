@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=redesign)](https://travis-ci.org/zaq178miami/amqpy)
+[![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=master)](https://travis-ci.org/zaq178miami/amqpy)
+
 AMQPy
 =====
 
@@ -22,16 +23,17 @@ or even send pull request or old-style patch.
 TODO
 ====
 
-[ ] - update readme
-[ ] - update demo
-[ ] - laravel bundle
-[ ] - code review
-[ ] - don't forget to change travis image back to master [![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=master)](https://travis-ci.org/zaq178miami/amqpy)
+- [ ] - update demo
+- [ ] - update readme
+- [ ] - add some docs
+- [ ] - laravel bundle
+- [ ] - code review
 
-[x] - unit tests
-[x] - code coverage
-[x] - C.R.A.P. index review
-[x] - finish redesign
-[x] - add getChannel() and getConnection() methods to AMQPChannel, AMQPQueue and AMQPQueue
-[x] - drop solutions support while they are too situation-specific
-[x] - drop php < 5.5 support to use new features (final)
+- [x] - don't forget to change travis image back to master [![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=master)](https://travis-ci.org/zaq178miami/amqpy)
+- [x] - unit tests
+- [x] - code coverage
+- [x] - C.R.A.P. index review
+- [x] - finish redesign
+- [x] - add getChannel() and getConnection() methods to AMQPChannel, AMQPQueue and AMQPQueue
+- [x] - drop solutions support while they are too situation-specific
+- [x] - drop php < 5.5 support to use new features (final)
