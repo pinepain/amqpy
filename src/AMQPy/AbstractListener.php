@@ -18,11 +18,11 @@ abstract class AbstractListener
 
     private $read_timeout;
 
-    public function __construct(AMQPQueue $queue, SerializersPool $serializers, DeliveryBuilder $builder)
+    public function __construct(AMQPQueue $queue, SerializersPool $serializers_pool, DeliveryBuilder $delivery_builder)
     {
-        $this->serializers = $serializers;
+        $this->serializers = $serializers_pool;
         $this->queue       = $queue;
-        $this->builder     = $builder;
+        $this->builder     = $delivery_builder;
     }
 
     public function getQueue()

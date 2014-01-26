@@ -12,10 +12,10 @@ class Publisher
     private $exchange;
     private $serializers;
 
-    public function __construct(AMQPExchange $exchange, SerializersPool $serializers)
+    public function __construct(AMQPExchange $exchange, SerializersPool $serializers_pool)
     {
         $this->exchange    = $exchange;
-        $this->serializers = $serializers;
+        $this->serializers = $serializers_pool;
     }
 
     public function getExchange()
