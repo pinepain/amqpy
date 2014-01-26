@@ -3,12 +3,12 @@
 
 namespace AMQPy\Tests;
 
-use AMQPy\Listenter;
+use AMQPy\Listener;
 
-class ListenterTest extends \PHPUnit_Framework_TestCase
+class ListenerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Listenter | \PHPUnit_Framework_MockObject_MockObject
+     * @var Listener | \PHPUnit_Framework_MockObject_MockObject
      */
     private $object;
 
@@ -56,7 +56,7 @@ class ListenterTest extends \PHPUnit_Framework_TestCase
                                     ->with($this->prop_content_type)
                                     ->will($this->returnValue($this->serializer_stub));
 
-        $this->object = $this->getMockBuilder('\AMQPy\Listenter')
+        $this->object = $this->getMockBuilder('\AMQPy\Listener')
                              ->setMethods(['getSerializers'])
                              ->disableOriginalConstructor()->getMock();
 
@@ -89,7 +89,7 @@ class ListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\Listenter::feed
+     * @covers \AMQPy\Listener::feed
      */
     public function testFeedRegularUseCase()
     {
@@ -121,7 +121,7 @@ class ListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers                   \AMQPy\Listenter::feed
+     * @covers                   \AMQPy\Listener::feed
      *
      * @expectedException \Exception
      * @expectedExceptionMessage Test before exception
@@ -148,7 +148,7 @@ class ListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\Listenter::feed
+     * @covers \AMQPy\Listener::feed
      */
     public function testFeedSerializerException()
     {
@@ -181,7 +181,7 @@ class ListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\Listenter::feed
+     * @covers \AMQPy\Listener::feed
      */
     public function testFeedConsumerException()
     {
@@ -213,7 +213,7 @@ class ListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers                   \AMQPy\Listenter::feed
+     * @covers                   \AMQPy\Listener::feed
      * @expectedException \Exception
      * @expectedExceptionMessage Test failure exception
 
@@ -249,7 +249,7 @@ class ListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers                   \AMQPy\Listenter::feed
+     * @covers                   \AMQPy\Listener::feed
      *
      * @expectedException \Exception
      * @expectedExceptionMessage Test after exception
@@ -285,7 +285,7 @@ class ListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers                   \AMQPy\Listenter::feed
+     * @covers                   \AMQPy\Listener::feed
      *
      * @expectedException \Exception
      * @expectedExceptionMessage Test always exception on successful consumer
@@ -322,7 +322,7 @@ class ListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers                   \AMQPy\Listenter::feed
+     * @covers                   \AMQPy\Listener::feed
      *
      * @expectedException \Exception
      * @expectedExceptionMessage Test always exception on failed consumer

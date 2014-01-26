@@ -27,7 +27,7 @@ class AbstractConsumerTest extends \PHPUnit_Framework_TestCase
      */
     public function testBegin()
     {
-        $listener = $this->getMock('AMQPy\AbstractListenter', [], [], '', false);
+        $listener = $this->getMock('AMQPy\AbstractListener', [], [], '', false);
 
         $listener->expects($this->at(0))
                  ->method('setEndless')
@@ -41,7 +41,7 @@ class AbstractConsumerTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnd()
     {
-        $listener = $this->getMock('AMQPy\AbstractListenter', [], [], '', false);
+        $listener = $this->getMock('AMQPy\AbstractListener', [], [], '', false);
 
         $listener->expects($this->at(0))
                  ->method('setEndless')
@@ -58,7 +58,7 @@ class AbstractConsumerTest extends \PHPUnit_Framework_TestCase
      */
     public function testBeforeThenConsumeThenAfter()
     {
-        $listener = $this->getMock('AMQPy\AbstractListenter', [], [], '', false);
+        $listener = $this->getMock('AMQPy\AbstractListener', [], [], '', false);
         $delivery = $this->getMock('\AMQPy\Client\Delivery', [], [], '', false);
 
         $this->object->before($delivery, $listener);
@@ -72,7 +72,7 @@ class AbstractConsumerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailure()
     {
-        $listener = $this->getMock('AMQPy\AbstractListenter', [], [], '', false);
+        $listener = $this->getMock('AMQPy\AbstractListener', [], [], '', false);
         $delivery = $this->getMock('\AMQPy\Client\Delivery', [], [], '', false);
 
         $listener->expects($this->at(0))

@@ -3,13 +3,13 @@
 
 namespace AMQPy\Tests;
 
-use AMQPy\AbstractListenter;
+use AMQPy\AbstractListener;
 
 
-class AbstractListenterTest extends \PHPUnit_Framework_TestCase
+class AbstractListenerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var AbstractListenter | \PHPUnit_Framework_MockObject_MockObject
+     * @var AbstractListener | \PHPUnit_Framework_MockObject_MockObject
      */
     private $object;
 
@@ -171,16 +171,16 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
                            ->will($this->returnValue($this->delivery_stub));
 
         $this->object = $this->getMockForAbstractClass(
-                             'AMQPy\AbstractListenter',
+                             'AMQPy\AbstractListener',
                              [$this->queue_stub, $this->serializers_pool_stub, $this->builder_stub]
         );
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::__construct
-     * @covers \AMQPy\AbstractListenter::getQueue
-     * @covers \AMQPy\AbstractListenter::getSerializers
-     * @covers \AMQPy\AbstractListenter::getBuilder
+     * @covers \AMQPy\AbstractListener::__construct
+     * @covers \AMQPy\AbstractListener::getQueue
+     * @covers \AMQPy\AbstractListener::getSerializers
+     * @covers \AMQPy\AbstractListener::getBuilder
      */
     public function testConstruct()
     {
@@ -190,8 +190,8 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::isEndless
-     * @covers \AMQPy\AbstractListenter::setEndless
+     * @covers \AMQPy\AbstractListener::isEndless
+     * @covers \AMQPy\AbstractListener::setEndless
      */
     public function testEndless()
     {
@@ -213,7 +213,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::accept
+     * @covers \AMQPy\AbstractListener::accept
      */
     public function testAccept()
     {
@@ -225,7 +225,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::resend
+     * @covers \AMQPy\AbstractListener::resend
      */
     public function testResend()
     {
@@ -237,7 +237,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::drop
+     * @covers \AMQPy\AbstractListener::drop
      */
     public function testDrop()
     {
@@ -249,7 +249,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::get
+     * @covers \AMQPy\AbstractListener::get
      */
     public function testGetNoAutoAck()
     {
@@ -264,7 +264,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::get
+     * @covers \AMQPy\AbstractListener::get
      */
     public function testGetAutoAck()
     {
@@ -280,7 +280,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
 
 
     /**
-     * @covers \AMQPy\AbstractListenter::consume
+     * @covers \AMQPy\AbstractListener::consume
      */
     public function testConsumeCancel()
     {
@@ -300,7 +300,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::consume
+     * @covers \AMQPy\AbstractListener::consume
      */
     public function testConsumeInactive()
     {
@@ -317,7 +317,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::consume
+     * @covers \AMQPy\AbstractListener::consume
      */
     public function testConsumeActiveOnce()
     {
@@ -346,7 +346,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers                   \AMQPy\AbstractListenter::consume
+     * @covers                   \AMQPy\AbstractListener::consume
      *
      * @expectedException \Exception
      * @expectedExceptionMessage Test feed exception
@@ -377,7 +377,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::consume
+     * @covers \AMQPy\AbstractListener::consume
      */
     public function testConsumeActiveTwice()
     {
@@ -400,7 +400,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::consume
+     * @covers \AMQPy\AbstractListener::consume
      */
     public function testConsumeNoAutoAck()
     {
@@ -418,7 +418,7 @@ class AbstractListenterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\AbstractListenter::consume
+     * @covers \AMQPy\AbstractListener::consume
      */
     public function testConsumeAutoAck()
     {

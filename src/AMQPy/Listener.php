@@ -5,7 +5,7 @@ namespace AMQPy;
 use AMQPy\Client\Delivery;
 use Exception;
 
-class Listenter extends AbstractListenter
+class Listener extends AbstractListener
 {
     public function feed(Delivery $delivery, AbstractConsumer $consumer)
     {

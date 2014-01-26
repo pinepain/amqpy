@@ -10,7 +10,7 @@ use AMQPy\Serializers\SerializersPool;
 use AMQPy\Support\DeliveryBuilder;
 use Exception;
 
-abstract class AbstractListenter
+abstract class AbstractListener
 {
     private $queue;
     private $serializers;
