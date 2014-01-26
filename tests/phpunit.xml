@@ -4,5 +4,10 @@
         <testsuite name="AMQPy test suite">
             <directory suffix="Test.php">./AMQPy</directory>
         </testsuite>
-    </testsuites>
+    </testsuites>\
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../src/</directory>
+        </whitelist>
+    </filter>
 </phpunit>
