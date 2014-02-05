@@ -45,6 +45,8 @@ class Publisher
 
         $attributes['content_type'] = $content_type;
 
+        $attributes = array_filter($attributes);
+
         $this->exchange->publish($message, $routing_key, $flags, $attributes);
     }
 }
