@@ -68,6 +68,22 @@ class AbstractConsumerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers                   AMQPy\AbstractConsumer::always
+     *
+     * @expectedException \Exception
+     * @expectedExceptionMessage Always exception
+     */
+    public function testAlwaysException()
+    {
+        $e = new \Exception('Always exception');
+
+        $listener = $this->getMock('AMQPy\AbstractListener', [], [], '', false);
+        $delivery = $this->getMock('\AMQPy\Client\Delivery', [], [], '', false);
+
+        $this->object->always('consumer result', 'mixed payload goes here', $delivery, $listener, $e);
+    }
+
+    /**
      * @covers AMQPy\AbstractConsumer::failure
      */
     public function testFailure()
@@ -89,7 +105,8 @@ class AbstractConsumerTest extends \PHPUnit_Framework_TestCase
      * @covers AMQPy\AbstractConsumer::activate
      * @covers AMQPy\AbstractConsumer::stop
      */
-    public function testActiveAndRelated() {
+    public function testActiveAndRelated()
+    {
 
         $this->assertTrue($this->object->active());
 

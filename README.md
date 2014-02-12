@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=master)](https://travis-ci.org/zaq178miami/amqpy)
+[![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=master)](https://travis-ci.org/pinepain/amqpy)
 
 AMQPy
 =====
@@ -26,14 +26,6 @@ TODO
 - [ ] - update demo
 - [ ] - update readme
 - [ ] - add some docs
+- [ ] - container and events support (should we? it may be done with inheritance and callbacks (before, after, etc.))
 - [ ] - laravel bundle
 - [ ] - code review
-
-- [x] - don't forget to change travis image back to master [![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=master)](https://travis-ci.org/zaq178miami/amqpy)
-- [x] - unit tests
-- [x] - code coverage
-- [x] - C.R.A.P. index review
-- [x] - finish redesign
-- [x] - add getChannel() and getConnection() methods to AMQPChannel, AMQPQueue and AMQPQueue
-- [x] - drop solutions support while they are too situation-specific
-- [x] - drop php < 5.5 support to use new features (final)

@@ -54,9 +54,14 @@ abstract class AbstractConsumer
      * @param Delivery          $delivery
      * @param AbstractListener $listener
      * @param Exception         $exception
+     *
+     * @throws Exception
      */
     public function always($result, $payload, Delivery $delivery, AbstractListener $listener, Exception $exception = null)
     {
+        if ($exception) {
+            throw $exception;
+        }
     }
 
     public function active()

@@ -216,7 +216,6 @@ class ListenerTest extends \PHPUnit_Framework_TestCase
      * @covers                   \AMQPy\Listener::feed
      * @expectedException \Exception
      * @expectedExceptionMessage Test failure exception
-
      */
     public function testFeedFailureException()
     {
