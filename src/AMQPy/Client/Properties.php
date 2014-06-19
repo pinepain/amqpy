@@ -6,14 +6,14 @@ use Traversable;
 use AMQPy\Client\Exceptions\PropertiesException;
 
 // http://www.rabbitmq.com/resources/specs/amqp-xml-doc0-9-1.pdf Section 1.8.2 Properties
-class Properties
+class Properties implements \ArrayAccess
 {
     const DELIVERY_MODE_NON_PERSISTENT = 1;
     const DELIVERY_MODE_PERSISTENT     = 2;
 
     protected $properties_map = [
         'content_type'     => false, // 'setContentType',
-        'content_encoding' => false, // 'setContent_encoding',
+        'content_encoding' => false, // 'setContentEncoding',
         'headers'          => 'setHeaders',
         'delivery_mode'    => false, // 'setDeliveryMode',
         'priority'         => false, // 'setPriority',
@@ -151,8 +151,6 @@ class Properties
      */
     public function setHeaders($headers)
     {
-        $_headers = [];
-
         if (is_array($headers)) {
             $_headers = $headers;
         } elseif ($headers instanceof Traversable) {
@@ -288,7 +286,6 @@ class Properties
                 } else {
                     $this->properties[$prop] = $value;
                 }
-            } else {
             }
         }
     }
