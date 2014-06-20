@@ -4,8 +4,30 @@ namespace AMQPy\Drivers;
 
 
 // TODO: add on-demand connecting
-class PhpAmqpExtension implements DriverInterface
+class PhpAmqpExtensionDriver implements DriverInterface
 {
+    private $credentials = [];
+
+    /**
+     * @var \AMQPConnection
+     */
+    private $connection;
+
+    /**
+     * @var \AMQPChannel
+     */
+    private $channel;
+
+    /**
+     * @var \AMQPQueue
+     */
+    private $queue;
+
+    /**
+     * @var \AMQPExchange
+     */
+    private $exchange;
+
     protected static $properties_type = array(
         "content_type"        => 'string',
         "content_encoding"    => 'string',
@@ -38,27 +60,91 @@ class PhpAmqpExtension implements DriverInterface
         'app_id'           => 'getAppId',
     );
 
-    private $credentials = [];
+    public function makeClass($class, array $arguments = array())
+    {
+        $reflect = new \ReflectionClass($class);
+
+        return $reflect->newInstanceArgs($arguments);
+    }
+
+    public function refreshInternals()
+    {
+        $this->exchange = null;
+        $this->queue    = null;
+        $this->channel  = null;
+    }
+
+    public function getActiveConnection()
+    {
+        if (!$this->connection) {
+            $this->connection = $this->makeClass('AMQPConnection', array($this->credentials));
+            $this->connection->connect();
+        } elseif (!$this->connection->isConnected()) {
+            $this->refreshInternals();
+            $this->connection->reconnect();
+        }
+
+        return $this->connection;
+    }
+
+    public function getActiveChannel()
+    {
+        if (!$this->channel) {
+            $this->channel = $this->makeClass('AMQPChannel', array($this->getActiveConnection()));
+        } elseif (!$this->channel->isConnected()) {
+            $this->refreshInternals();
+            $this->channel = $this->getActiveChannel();
+        }
+
+        return $this->channel;
+    }
+
+    public function getActiveExchange()
+    {
+        if (!$this->exchange || !$this->exchange->getChannel()->isConnected()) {
+            $this->exchange = $this->makeClass('AMQPExchange', array($this->getActiveChannel()));
+        }
+
+        return $this->exchange;
+    }
+
+    public function getActiveQueue()
+    {
+        if (!$this->queue || !$this->queue->getChannel()->isConnected()) {
+            $this->queue = $this->makeClass('AMQPQueue', array($this->getActiveChannel()));
+        }
+
+        return $this->queue;
+    }
 
     /**
-     * @var \AMQPConnection
+     * @param \AMQPEnvelope $envelope
+     *
+     * @return array
      */
-    private $connection;
+    public function decodeEnvelope($envelope = null)
+    {
+        if (!$envelope) {
+            return null;
+        }
 
-    /**
-     * @var \AMQPChannel
-     */
-    private $channel;
+        $body = $envelope->getBody();
 
-    /**
-     * @var \AMQPQueue
-     */
-    private $queue;
+        $properties = array();
+        foreach (self::$properties_accessor as $property => $accessor) {
+            $properties[$property] = $envelope->$accessor();
+        }
 
-    /**
-     * @var \AMQPExchange
-     */
-    private $exchange;
+        $delivery_info = array(
+            'delivery_tag'  => $envelope->getDeliveryTag(),
+            'redelivered'   => $envelope->isRedelivery(),
+            'exchange'      => $envelope->getExchangeName(),
+            'routing_key'   => $envelope->getRoutingKey(),
+            'message_count' => false, // unavailable within php-amqp
+        );
+
+        return array($body, $delivery_info, $properties);
+    }
 
     public function isAsync()
     {
@@ -122,80 +208,6 @@ class PhpAmqpExtension implements DriverInterface
         }
 
         return false;
-    }
-
-    public function refreshInternals()
-    {
-        $this->exchange = null;
-        $this->queue    = null;
-        $this->channel  = null;
-    }
-
-    public function getActiveConnection()
-    {
-        if (!$this->connection) {
-            $this->connection = new \AMQPConnection($this->credentials);
-            $this->connection->connect();
-        } elseif (!$this->connection->isConnected()) {
-            $this->refreshInternals();
-            $this->connection->reconnect();
-        }
-
-        return $this->connection;
-    }
-
-    public function getActiveChannel()
-    {
-        if (!$this->channel) {
-            $this->channel = new \AMQPChannel($this->getActiveConnection());
-        } elseif (!$this->channel->isConnected()) {
-            $this->refreshInternals();
-            $this->channel = $this->getActiveChannel();
-        }
-
-        return $this->channel;
-    }
-
-    public function getActiveExchange()
-    {
-        if (!$this->exchange || !$this->exchange->getChannel()->isConnected()) {
-            $this->exchange = new \AMQPExchange($this->getActiveChannel());
-        }
-
-        return $this->exchange;
-    }
-
-    public function getActiveQueue()
-    {
-        if (!$this->queue || !$this->queue->getChannel()->isConnected()) {
-            $this->queue = new \AMQPQueue($this->getActiveChannel());
-        }
-
-        return $this->queue;
-    }
-
-    public function decodeEnvelope(\AMQPEnvelope $envelope = null)
-    {
-        if (!$envelope) {
-            return null;
-        }
-
-        $body = $envelope->getBody();
-
-        $properties = array();
-        foreach (self::$properties_accessor as $property => $accessor) {
-            $properties[$property] = $envelope->$accessor();
-        }
-
-        $delivery_info = array(
-            'delivery_tag'  => $envelope->getDeliveryTag(),
-            'redelivered'   => $envelope->isRedelivery(),
-            'exchange'      => $envelope->getExchangeName(),
-            'routing_key'   => $envelope->getRoutingKey(),
-            'message_count' => false, // unavailable within php-amqp
-        );
-
-        return array($body, $delivery_info, $properties);
     }
 
     /**
@@ -545,7 +557,7 @@ class PhpAmqpExtension implements DriverInterface
             | ($nowait ? AMQP_NOWAIT : AMQP_NOPARAM);
 
         if ($callback) {
-            $wrapper = function (\AMQPEnvelope $envelope) use ($callback) {
+            $wrapper = function ($envelope) use ($callback) {
                 return call_user_func_array($callback, $this->decodeEnvelope($envelope));
             };
         } else {

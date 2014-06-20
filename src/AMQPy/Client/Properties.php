@@ -6,7 +6,7 @@ use Traversable;
 use AMQPy\Client\Exceptions\PropertiesException;
 
 // http://www.rabbitmq.com/resources/specs/amqp-xml-doc0-9-1.pdf Section 1.8.2 Properties
-class Properties implements \ArrayAccess
+class Properties #implements \ArrayAccess
 {
     const DELIVERY_MODE_NON_PERSISTENT = 1;
     const DELIVERY_MODE_PERSISTENT     = 2;
