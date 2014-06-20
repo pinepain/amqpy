@@ -22,6 +22,13 @@ interface DriverInterface
      */
     public function isDeferred();
 
+    ///**
+    // * Whether transaction started
+    // *
+    // * @return bool
+    // */
+    //public function isTransactional();
+
     /**
      * When in asynchronous mode listen for new data from AMQP broker, ignored otherwise.
      *
@@ -122,58 +129,249 @@ interface DriverInterface
      * @param string $destination
      * @param string $source
      * @param string $routing_key
+     * @param bool   $nowait
      * @param array  $arguments
      *
-     * @return mixed
+     * @return bool
      */
-    public function exchangeUnbind($destination, $source, $routing_key = "", array $arguments = array());
+    public function exchangeUnbind($destination, $source, $routing_key = "", $nowait = false, array $arguments = array());
 
     // queue class
+
+    /**
+     * Declare queue, create if needed.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#queue.declare
+     *
+     * @param string $queue
+     * @param bool   $passive
+     * @param bool   $durable
+     * @param bool   $exclusive
+     * @param bool   $auto_delete
+     * @param bool   $nowait
+     * @param null   $arguments
+     *
+     * @return int Queued messages count
+     */
     public function queueDeclare($queue = "", $passive = false, $durable = false, $exclusive = false, $auto_delete = true, $nowait = false, $arguments = null);
 
+    /**
+     * Delete a queue.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#queue.delete
+     *
+     * @param string $queue
+     * @param bool   $if_unused
+     * @param bool   $if_empty
+     * @param bool   $nowait
+     *
+     * @return int Deleted messages count
+     */
     public function queueDestroy($queue = "", $if_unused = false, $if_empty = false, $nowait = false);
 
+    /**
+     * Bind queue to an exchange.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#queue.bind
+     *
+     * @param        $queue
+     * @param        $exchange
+     * @param string $routing_key
+     * @param bool   $nowait
+     * @param null   $arguments
+     *
+     * @return bool
+     */
     public function queueBind($queue, $exchange, $routing_key = "", $nowait = false, $arguments = null);
 
+    /**
+     * Unbind a queue from an exchange.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#queue.unbind
+     *
+     * @param        $queue
+     * @param        $exchange
+     * @param string $routing_key
+     * @param null   $arguments
+     *
+     * @return bool
+     */
     public function queueUnbind($queue, $exchange, $routing_key = "", $arguments = null);
 
+    /**
+     * Purge a queue.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#queue.purge
+     *
+     * @param string $queue
+     * @param bool   $nowait
+     *
+     * @return int  Number of messages purged.
+     */
     public function queuePurge($queue = "", $nowait = false);
 
     // tx class
+    /**
+     * Select standard transaction mode.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#tx.select
+     *
+     * @return bool
+     */
     public function txSelect();
 
+    /**
+     * Commit the current transaction.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#tx.commit
+     *
+     * @return bool
+     */
     public function txCommit();
 
+    /**
+     * Abandon the current transaction.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#tx.rollback
+     *
+     * @return bool
+     */
     public function txRollback();
 
     // confirm class
+    /**
+     * Sets the channel to use publisher acknowledgements.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#confirm.select
+     *
+     * @param bool $nowait
+     *
+     * @return bool
+     */
     public function confirmSelect($nowait = false);
 
     // basic class
+    /**
+     * Acknowledge one or more messages.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.ack
+     *
+     * @param      $delivery_tag
+     * @param bool $multiple
+     *
+     * @return bool
+     */
     public function basicAck($delivery_tag, $multiple = false);
 
+    /**
+     * End a queue consumer.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.cancel
+     *
+     * @param      $consumer_tag
+     * @param bool $nowait
+     *
+     * @return bool
+     */
     public function basicCancel($consumer_tag, $nowait = false);
 
-    // NOTE: RabbitMQ does not support the no-local parameter of basic.consume.
+    /**
+     * Start a queue consumer.
+     * NOTE: RabbitMQ does not support the no-local parameter of basic.consume.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.consume
+     *
+     * @param string $queue
+     * @param null   $callback
+     * @param string $consumer_tag
+     * @param bool   $no_local
+     * @param bool   $no_ack
+     * @param bool   $exclusive
+     * @param bool   $nowait
+     * @param array  $arguments
+     *
+     * @return bool
+     */
     public function basicConsume(
-        $queue = "", $consumer_tag = "", $no_local = false,
-        $no_ack = false, $exclusive = false, $nowait = false,
-        $callback = null, $ticket = null, $arguments = array()
+        $queue = "", $callback = null, $consumer_tag = "", $no_local = false,
+        $no_ack = false, $exclusive = false, $nowait = false, $arguments = array()
     );
 
+    /**
+     * Direct access to a queue.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.get
+     *
+     * @param string $queue
+     * @param bool   $no_ack
+     *
+     * @return array(string $body, array delivery_info, array properties) | null
+     */
+    public function basicGet($queue = "", $no_ack = false);
 
-    // TODO basic.deliver(consumer-tag consumer-tag, delivery-tag delivery-tag, redelivered redelivered, exchange-name exchange, shortstr routing-key)
-    // public function basicDeliver(); // ($args, $msg)
-    public function basicGet($queue = "", $no_ack = false, $ticket = null);
-
+    /**
+     * Reject one or more incoming messages.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.nack
+     *
+     * @param string $delivery_tag
+     * @param bool   $multiple
+     * @param bool   $requeue
+     *
+     * @return bool
+     */
     public function basicNack($delivery_tag, $multiple = false, $requeue = false);
 
-    public function basicPublish($msg, $exchange = "", $routing_key = "", $mandatory = false, $immediate = false, $ticket = null);
+    /**
+     * Publish a message.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.publish
+     *
+     * @param string $msg
+     * @param array  $properties
+     * @param string $exchange
+     * @param string $routing_key
+     * @param bool   $mandatory
+     * @param bool   $immediate
+     *
+     * @return bool
+     */
+    public function basicPublish($msg, $exchange = "", $routing_key = "", array $properties = array(), $mandatory = false, $immediate = false);
 
-    public function basicQos($prefetch_size, $prefetch_count, $a_global);
 
+    /**
+     * Specify quality of service.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.qos
+     *
+     * @param int  $prefetch_count
+     * @param int  $prefetch_size NOTE: Prefetch size limits are not implemented in RabbitMQ.
+     * @param bool $a_global      NOTE: Has different meaning in RabbitMQ, see https://www.rabbitmq.com/consumer-prefetch.html
+     *
+     * @return bool
+     */
+    public function basicQos($prefetch_count, $prefetch_size = 0, $a_global = false);
+
+    /**
+     * Redeliver unacknowledged messages.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.recover
+     *
+     * @param bool $requeue NOTE: Recovery with requeue=false is not supported.
+     *
+     * @return bool
+     */
     public function basicRecover($requeue = false);
 
-    public function basicReject($delivery_tag, $requeue);
-    //public function basicReturn();
+    /**
+     * Reject an incoming message.
+     *
+     * @link https://www.rabbitmq.com/amqp-0-9-1-reference.html#basic.reject
+     *
+     * @param $delivery_tag
+     * @param $requeue
+     *
+     * @return mixed
+     */
+    public function basicReject($delivery_tag, $requeue = false);
 }
