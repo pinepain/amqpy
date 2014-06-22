@@ -42,10 +42,11 @@ interface DriverInterface
      * Connect to AMQP server
      *
      * @param array $credentials
+     * @param bool  $deferred
      *
      * @return bool|null Whether connection established or null if deferred
      */
-    public function connect(array $credentials);
+    public function connect(array $credentials = array(), $deferred = true);
 
     ///**
     // * Enable/disable flow from peer.
@@ -57,7 +58,20 @@ interface DriverInterface
     // * @return bool  Confirms the setting of the processed flow method: true means the peer will start sending or continue to send content frames; false means it will not.
     // */
     //public function flow($active); // in fact, it from channel class, and rabbitmq doesn't support channel.flow with active=false (php-amqp doesn't support it at all due to rabbitmq-orientation)
+
+    /**
+     * Disconnect to AMQP server
+     *
+     * @return bool|null Whether disconnected or null if no connection was established before
+     */
     public function disconnect();
+
+    /**
+     * Reconnect to AMQP server
+     *
+     * @return bool|null Whether connection established or null if deferred
+     */
+    public function reconnect();
 
     /**
      * @return bool Whether connection established

@@ -6,7 +6,8 @@ namespace AMQPy\Drivers;
 // TODO: add on-demand connecting
 class PhpAmqpExtensionDriver implements DriverInterface
 {
-    private $credentials = [];
+    private $credentials;
+    private $deferred;
 
     /**
      * @var \AMQPConnection
@@ -67,7 +68,7 @@ class PhpAmqpExtensionDriver implements DriverInterface
         return $reflect->newInstanceArgs($arguments);
     }
 
-    public function refreshInternals()
+    private function refreshInternals()
     {
         $this->exchange = null;
         $this->queue    = null;
@@ -77,6 +78,10 @@ class PhpAmqpExtensionDriver implements DriverInterface
     public function getActiveConnection()
     {
         if (!$this->connection) {
+            if (null === $this->credentials) {
+                throw new DriverException('No connection credentials set');
+            }
+
             $this->connection = $this->makeClass('AMQPConnection', array($this->credentials));
             $this->connection->connect();
         } elseif (!$this->connection->isConnected()) {
@@ -89,11 +94,9 @@ class PhpAmqpExtensionDriver implements DriverInterface
 
     public function getActiveChannel()
     {
-        if (!$this->channel) {
-            $this->channel = $this->makeClass('AMQPChannel', array($this->getActiveConnection()));
-        } elseif (!$this->channel->isConnected()) {
+        if (!$this->channel || !$this->channel->isConnected()) {
             $this->refreshInternals();
-            $this->channel = $this->getActiveChannel();
+            $this->channel = $this->makeClass('AMQPChannel', array($this->getActiveConnection()));
         }
 
         return $this->channel;
@@ -158,7 +161,7 @@ class PhpAmqpExtensionDriver implements DriverInterface
      */
     public function isDeferred()
     {
-        return true;
+        return $this->deferred;
     }
 
     /**
@@ -174,26 +177,59 @@ class PhpAmqpExtensionDriver implements DriverInterface
      * Connect to AMQP server
      *
      * @param array $credentials
+     * @param bool  $deferred
      *
-     * @return bool Whether connection established
+     * @return bool|null Whether connection established or null if deferred
      */
-    public function connect(array $credentials)
+    public function connect(array $credentials = array(), $deferred = true)
     {
         if ($this->isConnected()) {
             $this->disconnect();
         }
 
         $this->credentials = $credentials;
+
+        if ($this->deferred) {
+            $this->getActiveConnection();
+        }
+
+        return null;
     }
 
+    /**
+     * Disconnect to AMQP server
+     *
+     * @return bool|null Whether disconnected or null if no connection was established before
+     */
     public function disconnect()
     {
+        if (!$this->connection) {
+            return null;
+        }
+
         if ($this->connection->isConnected()) {
             $this->connection->disconnect();
         }
 
-        $this->connection = null;
+        $this->connection  = null;
+        $this->credentials = null;
+
         $this->refreshInternals();
+
+        return true;
+    }
+
+    /**
+     * Reconnect to AMQP server
+     *
+     * @return bool|null Whether connection established or null if deferred
+     */
+    public function reconnect()
+    {
+        $credentials = $this->credentials;
+
+        $this->disconnect();
+        $this->connect($credentials);
     }
 
     /**
@@ -201,6 +237,8 @@ class PhpAmqpExtensionDriver implements DriverInterface
      */
     public function isConnected()
     {
+        var_dump($this->channel);
+
         if ($this->channel) {
             return $this->channel->isConnected();
         } elseif ($this->connection) {
