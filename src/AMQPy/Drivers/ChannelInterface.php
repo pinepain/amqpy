@@ -4,9 +4,18 @@
 namespace AMQPy\Drivers;
 
 
-interface DriverInterface
+interface ChannelInterface
 {
-    // Driver-specific options
+
+    /**
+     * @param $connection ConnectionInterface
+     */
+    public function __construct($connection);
+
+    /**
+     * @return ConnectionInterface
+     */
+    public function getConnection();
 
     /**
      * Whether driver communicates with server asynchronously.
@@ -14,13 +23,6 @@ interface DriverInterface
      * @return bool
      */
     public function isAsync();
-
-    /**
-     * Whether driver run actions in deferred way whenever it possible and not mission-critical.
-     *
-     * @return bool
-     */
-    public function isDeferred();
 
     ///**
     // * Whether transaction started
@@ -36,17 +38,33 @@ interface DriverInterface
      */
     public function wait();
 
-    // connection-related methods
+    /**
+     * Whether channel is connected and active
+     *
+     * @return bool|null If deferred connection is used, null represent state when no connection was established yet.
+     */
+    public function isConnected();
 
     /**
-     * Connect to AMQP server
+     * Open new channel, if it was not opened yet
      *
-     * @param array $credentials
-     * @param bool  $deferred
-     *
-     * @return bool|null Whether connection established or null if deferred
+     * @return bool Whether channel opened
      */
-    public function connect(array $credentials = array(), $deferred = true);
+    public function connect();
+
+    /**
+     * Close channel, if it was opened
+     *
+     * @return bool Whether channel is closed
+     */
+    public function disconnect();
+
+    /**
+     * Reopen channel
+     *
+     * @return bool Whether channel was successfully reopened
+     */
+    public function reconnect();
 
     ///**
     // * Enable/disable flow from peer.
@@ -59,24 +77,6 @@ interface DriverInterface
     // */
     //public function flow($active); // in fact, it from channel class, and rabbitmq doesn't support channel.flow with active=false (php-amqp doesn't support it at all due to rabbitmq-orientation)
 
-    /**
-     * Disconnect to AMQP server
-     *
-     * @return bool|null Whether disconnected or null if no connection was established before
-     */
-    public function disconnect();
-
-    /**
-     * Reconnect to AMQP server
-     *
-     * @return bool|null Whether connection established or null if deferred
-     */
-    public function reconnect();
-
-    /**
-     * @return bool Whether connection established
-     */
-    public function isConnected();
 
     // channel class: deprecated to call manually
     //public function channelOpen($id = null);
@@ -86,6 +86,7 @@ interface DriverInterface
     //// php-amqplib signature: $reply_code=0, $reply_text="", $method_sig=array(0, 0)
     //// php-amqp doesn't support it at all
     //public function channelClose($id);
+
 
     // exchange class
 

@@ -6,10 +6,10 @@ namespace AMQPy\Tests\Drivers;
 use AMQPy\Drivers\PhpAmqpExtensionDriver;
 use Mockery as m;
 
-class PhpAmqpExtensionDriverTest extends \PHPUnit_Framework_TestCase
+class ChannelTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var PhpAmqpExtensionDriver | \Mockery\Mock
+     * @var Connection | \Mockery\Mock
      */
     private $driver;
 
@@ -51,34 +51,6 @@ class PhpAmqpExtensionDriverTest extends \PHPUnit_Framework_TestCase
         $driver->shouldReceive('disconnect')->withNoArgs()->once();
 
         $this->assertNull($driver->connect());
-    }
-
-    /**
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::makeClass
-     *
-     * @group  internals
-     */
-    public function testMakeClassWithDefaultArguments()
-    {
-        $driver = $this->driver;
-
-        $this->assertInstanceOf('StdClass', $driver->makeClass('StdClass'));
-    }
-
-    /**
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::makeClass
-     *
-     * @group  internals
-     */
-    public function testMakeClassWithPresetArguments()
-    {
-        $driver = $this->driver;
-
-        $datetime = '1999-01-01 01:01:01';
-        $instance = $driver->makeClass('DateTime', array($datetime));
-
-        $this->assertInstanceOf('DateTime', $instance);
-        $this->assertEquals($datetime, $instance->format('Y-m-d H:i:s'));
     }
 
     /**
@@ -185,14 +157,19 @@ class PhpAmqpExtensionDriverTest extends \PHPUnit_Framework_TestCase
     {
         $driver = $this->driver;
 
+        $connection = m::mock('stdClass');
+
         $channel = m::mock('stdClass');
-        $channel->shouldReceive('isConnected')->once()->andReturnValues(array(true, false));
+        $channel->shouldReceive('isConnected')->twice()->andReturnValues(array(true, false));
 
-        $driver->shouldReceive('makeClass')->with('AMQPChannel')->andReturn($channel);
+        $driver->shouldReceive('makeClass')->with('AMQPConnection', array(array()))->andReturn($connection);
+        $driver->shouldReceive('makeClass')->with('AMQPChannel', array($connection))->andReturn($channel);
 
+        $this->assertFalse($driver->isConnected());
+
+        $driver->getActiveChannel();
 
         $this->assertTrue($driver->isConnected());
-        $this->assertFalse($driver->isConnected());
 
 //        $channel = m::mock('stdClass');
 //        $channel->shouldReceive('isConnected')->once()->andReturn(true);
