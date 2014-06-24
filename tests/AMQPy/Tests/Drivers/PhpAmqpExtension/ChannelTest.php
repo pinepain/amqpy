@@ -1,22 +1,22 @@
 <?php
 
 
-namespace AMQPy\Tests\Drivers;
+namespace AMQPy\Tests\Drivers\PhpAmqpExtension;
 
-use AMQPy\Drivers\PhpAmqpExtensionDriver;
+use AMQPy\Drivers\PhpAmqpExtension\Channel;
 use Mockery as m;
 
 class ChannelTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Connection | \Mockery\Mock
+     * @var Channel | \Mockery\Mock
      */
-    private $driver;
+    private $channel;
 
     protected function setUp()
     {
-        $this->driver = m::mock('\AMQPy\Drivers\PhpAmqpExtensionDriver')
-                         ->makePartial();
+        $this->channel = m::mock('AMQPy\Drivers\PhpAmqpExtension\Channel')
+                          ->makePartial();
     }
 
     protected function tearDown()

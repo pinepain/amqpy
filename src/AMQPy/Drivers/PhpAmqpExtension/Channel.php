@@ -67,10 +67,6 @@ class Channel implements ChannelInterface
     public function __construct($connection)
     {
         $this->connection = $connection;
-
-        if (!$this->isDeferred()) {
-            $this->connect();
-        }
     }
 
     /**
@@ -89,16 +85,6 @@ class Channel implements ChannelInterface
     public function isAsync()
     {
         return $this->connection->isAsync();
-    }
-
-    /**
-     * Whether driver run actions in deferred way whenever it possible and not mission-critical.
-     *
-     * @return bool
-     */
-    public function isDeferred()
-    {
-        return $this->connection->isDeferred();
     }
 
     /**
