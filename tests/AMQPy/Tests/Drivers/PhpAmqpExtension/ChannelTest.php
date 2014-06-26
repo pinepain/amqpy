@@ -25,17 +25,17 @@ class ChannelTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::connect
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::getConnection
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::__construct
      *
      * @group  interface
      */
-    public function testConnectWhenNotConnected()
+    public function testGetConnection()
     {
-        $driver = $this->driver;
-
-        $driver->shouldReceive('isConnected')->withNoArgs()->once()->andReturn(false);
-
-        $this->assertNull($driver->connect());
+        $connection = m::mock('stdClass');
+        $channel = new Channel($connection);
+        
+        $this->assertSame($connection, $channel->getConnection());
     }
 
     /**
