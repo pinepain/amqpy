@@ -34,7 +34,7 @@ class ChannelTest extends \PHPUnit_Framework_TestCase
     {
         $connection = m::mock('stdClass');
         $channel = new Channel($connection);
-        
+
         $this->assertSame($connection, $channel->getConnection());
     }
 
