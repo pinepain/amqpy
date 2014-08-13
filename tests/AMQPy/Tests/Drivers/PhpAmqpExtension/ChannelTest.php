@@ -13,9 +13,16 @@ class ChannelTest extends \PHPUnit_Framework_TestCase
      */
     private $channel;
 
+    /**
+     * @var \AMQPy\Drivers\PhpAmqpExtension\Connection | \Mockery\Mock
+     */
+    private $connection;
+
     protected function setUp()
     {
-        $this->channel = m::mock('AMQPy\Drivers\PhpAmqpExtension\Channel')
+        $this->connection = m::mock('stdClass');
+
+        $this->channel = m::mock('AMQPy\Drivers\PhpAmqpExtension\Channel', array($this->connection))
                           ->makePartial();
     }
 
@@ -39,19 +46,79 @@ class ChannelTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::connect
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::isAsync
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::__construct
      *
      * @group  interface
      */
-    public function testConnectWhenConnected()
+    public function testIsAsync()
     {
-        $driver = $this->driver;
-
-        $driver->shouldReceive('isConnected')->withNoArgs()->once()->andReturn(true);
-        $driver->shouldReceive('disconnect')->withNoArgs()->once();
-
-        $this->assertNull($driver->connect());
+        /** @var  $connection */
+        $this->connection->shouldReceive('isAsync')->withNoArgs()->once()->andReturn(true);
+        $this->assertTrue($this->channel->isAsync());
     }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::wait
+     *
+     * @group  interface
+     */
+    public function testWait()
+    {
+        // dummy test case to show that there are no waiting and to make coverage fans happy
+
+        $time = microtime(true);
+        $this->assertNull($this->channel->wait());
+        $this->assertLessThan(1, microtime(true) - $time);
+    }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::connect
+     *
+     * @group  interface
+     */
+    public function testConnect()
+    {
+        $amqp_channel = m::mock('stdClass');
+        $amqp_channel->shouldReceive('isConnected')->withNoArgs()->twice()->andReturn(true);
+
+        $this->connection->shouldReceive('createChannel')->withNoArgs()->once()->andReturn($amqp_channel);
+
+        $this->assertTrue($this->channel->connect());
+        $this->assertTrue($this->channel->connect());
+    }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::isConnected
+     *
+     * @group  interface
+     */
+    public function testIsConnectedWhenDisconnected()
+    {
+        $this->assertFalse($this->channel->isConnected());
+    }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::isConnected
+     *
+     * @group  interface
+     */
+    public function testIsConnectedWhenConnected()
+    {
+        $amqp_channel = m::mock('stdClass');
+        $amqp_channel->shouldReceive('isConnected')->withNoArgs()->times(3)->andReturnValues(array(true, true, false));
+
+        $this->connection->shouldReceive('createChannel')->withNoArgs()->once()->andReturn($amqp_channel);
+
+        $this->channel->connect();
+
+        $this->assertTrue($this->channel->isConnected());
+        $this->assertFalse($this->channel->isConnected());
+    }
+
+
+    // !!! INVALID TEST CASES BELOW !!! TODO: refactor them
+
 
     /**
      * @covers                   \AMQPy\Drivers\PhpAmqpExtensionDriver::getActiveConnection
