@@ -4,8 +4,8 @@ namespace AMQPy\Drivers\PhpAmqpExtension;
 
 
 // TODO: add on-demand connecting
-use AMQPy\Drivers\ConnectionInterface;
 use AMQPy\Drivers\ChannelInterface;
+use AMQPy\Drivers\ConnectionInterface;
 
 class Channel implements ChannelInterface
 {
@@ -129,11 +129,9 @@ class Channel implements ChannelInterface
     {
         // NOTE: php-amqp has no direct channel.close method calling support but it closes channel when destructor called
 
-        if ($this->channel) {
-            $this->channel  = null;
-            $this->exchange = null;
-            $this->queue    = null;
-        }
+        $this->channel  = null;
+        $this->exchange = null;
+        $this->queue    = null;
 
         return true;
     }
@@ -146,8 +144,16 @@ class Channel implements ChannelInterface
     public function reconnect()
     {
         // not a rocket science, huh?
-        $this->disconnect();
-        $this->connect();
+        return $this->disconnect() && $this->connect();
+    }
+
+    public function getActiveChannel()
+    {
+        if (!$this->channel) {
+            $this->connect();
+        }
+
+        return $this->channel;
     }
 
     public function getActiveExchange()
@@ -273,7 +279,7 @@ class Channel implements ChannelInterface
      */
     public function exchangeBind($destination, $source, $routing_key = "", $nowait = false, array $arguments = array())
     {
-        $flags =    $nowait ? AMQP_NOWAIT : AMQP_NOPARAM;
+        $flags = $nowait ? AMQP_NOWAIT : AMQP_NOPARAM;
 
         $amqp_exchange = $this->getActiveExchange();
         $amqp_exchange->setName($source);

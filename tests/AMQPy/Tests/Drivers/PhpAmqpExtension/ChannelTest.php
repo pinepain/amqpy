@@ -40,7 +40,7 @@ class ChannelTest extends \PHPUnit_Framework_TestCase
     public function testGetConnection()
     {
         $connection = m::mock('stdClass');
-        $channel = new Channel($connection);
+        $channel    = new Channel($connection);
 
         $this->assertSame($connection, $channel->getConnection());
     }
@@ -110,187 +110,207 @@ class ChannelTest extends \PHPUnit_Framework_TestCase
 
         $this->connection->shouldReceive('createChannel')->withNoArgs()->once()->andReturn($amqp_channel);
 
-        $this->channel->connect();
+        $this->assertTrue($this->channel->connect());
 
         $this->assertTrue($this->channel->isConnected());
         $this->assertFalse($this->channel->isConnected());
     }
 
-
-    // !!! INVALID TEST CASES BELOW !!! TODO: refactor them
-
-
     /**
-     * @covers                   \AMQPy\Drivers\PhpAmqpExtensionDriver::getActiveConnection
-     *
-     * @expectedException \AMQPy\Drivers\DriverException
-     * @expectedExceptionMessage No connection credentials set
-     *
-     * @group                    internals
-     */
-    public function testGetActiveConnectionWhenNoCredentialsSet()
-    {
-        $driver = $this->driver;
-
-        $driver->getActiveConnection();
-    }
-
-    /**
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::getActiveConnection
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::refreshInternals
-     *
-     * @group  internals
-     */
-    public function testGetActiveConnection()
-    {
-        $driver = $this->driver;
-
-        $connection = m::mock('stdClass');
-        $connection->shouldReceive('connect')->once();
-        $connection->shouldReceive('isConnected')->once()->andReturn(false);
-        $connection->shouldReceive('reconnect')->once();
-
-        $credentials = array('user' => 'dummy');
-
-        $driver->connect($credentials);
-
-        $driver->shouldReceive('makeClass')
-               ->with('AMQPConnection', array($credentials))
-               ->once()
-               ->andReturn($connection);
-
-        $this->assertSame($connection, $driver->getActiveConnection());
-        $this->assertSame($connection, $driver->getActiveConnection());
-    }
-
-    /**
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::getActiveChannel
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::refreshInternals
-     *
-     * @group  internals
-     */
-    public function testGetActiveChannel()
-    {
-        $driver = $this->driver;
-
-        $dead_channel = m::mock('stdClass');
-        $dead_channel->shouldReceive('isConnected')->once()->andReturn(false);
-
-        $channel = m::mock('stdClass');
-        $channel->shouldReceive('isConnected')->once()->andReturn(true);
-
-        $connection = m::mock('stdClass');
-
-        $driver->shouldReceive('getActiveConnection')->twice()->andReturn($connection);
-
-        $driver->shouldReceive('makeClass')
-               ->with('AMQPChannel', array($connection))
-               ->twice()
-               ->andReturnValues(array($dead_channel, $channel));
-
-        $this->assertSame($dead_channel, $driver->getActiveChannel());
-        $this->assertSame($channel, $driver->getActiveChannel());
-        $this->assertSame($channel, $driver->getActiveChannel());
-    }
-
-    /**
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::isConnected
-     *
-     * @group  interface
-     */
-    public function testIsConnected()
-    {
-        $driver = $this->driver;
-
-        $this->assertFalse($driver->isConnected());
-
-//        $channel = m::mock('stdClass');
-//        $channel->shouldReceive('isConnected')->once()->andReturn(true);
-
-//        $connection = m::mock('stdClass');
-//        $connection->shouldReceive('isConnected')->once()->andReturn(true);
-
-//        $driver->shouldReceive('makeClass')->with('AMQPChannel')->andReturn($channel);
-//        $driver->shouldReceive('makeClass')->with('AMQPConnection')->andReturn($connection);
-
-    }
-
-    /**
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::isConnected
-     *
-     * @group  interface
-     */
-    public function testIsConnectedOnChannel()
-    {
-        $driver = $this->driver;
-
-        $connection = m::mock('stdClass');
-
-        $channel = m::mock('stdClass');
-        $channel->shouldReceive('isConnected')->twice()->andReturnValues(array(true, false));
-
-        $driver->shouldReceive('makeClass')->with('AMQPConnection', array(array()))->andReturn($connection);
-        $driver->shouldReceive('makeClass')->with('AMQPChannel', array($connection))->andReturn($channel);
-
-        $this->assertFalse($driver->isConnected());
-
-        $driver->getActiveChannel();
-
-        $this->assertTrue($driver->isConnected());
-
-//        $channel = m::mock('stdClass');
-//        $channel->shouldReceive('isConnected')->once()->andReturn(true);
-
-//        $connection = m::mock('stdClass');
-//        $connection->shouldReceive('isConnected')->once()->andReturn(true);
-
-//        $driver->shouldReceive('makeClass')->with('AMQPChannel')->andReturn($channel);
-//        $driver->shouldReceive('makeClass')->with('AMQPConnection')->andReturn($connection);
-
-    }
-
-    /**
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::disconnect
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::refreshInternals
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::disconnect
      *
      * @group  interface
      */
     public function testDisconnectWhenNotConnected()
     {
-        $driver = $this->driver;
 
-        $this->assertNull($driver->disconnect());
+        $this->assertFalse($this->channel->isConnected());
+        $this->assertTrue($this->channel->disconnect());
+        $this->assertFalse($this->channel->isConnected());
     }
 
     /**
-     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::disconnect
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::disconnect
      *
      * @group  interface
      */
     public function testDisconnectWhenConnected()
     {
-        $driver = $this->driver;
+        $amqp_channel = m::mock('stdClass');
+        $amqp_channel->shouldReceive('isConnected')->withNoArgs()->twice()->andReturn(true);
 
-        $connection = m::mock('stdClass');
-        $connection->shouldReceive('isConnected')->twice()->andReturn(true);
-        $connection->shouldReceive('connect')->once();
-        $connection->shouldReceive('disconnect')->once();
+        $this->connection->shouldReceive('createChannel')->withNoArgs()->once()->andReturn($amqp_channel);
 
-        $credentials = array('user' => 'dummy');
+        $this->channel->connect();
+        $this->assertTrue($this->channel->isConnected());
 
-        $driver->shouldReceive('makeClass')
-               ->with('AMQPConnection', array($credentials))
-               ->once()
-               ->andReturn($connection);
-
-        $driver->connect($credentials);
-        $driver->getActiveConnection(); // do real connection
-
-        $this->assertTrue($driver->isConnected());
-
-        $this->assertTrue($driver->disconnect());
-        $this->assertFalse($driver->isConnected());
+        $this->assertTrue($this->channel->disconnect());
+        $this->assertFalse($this->channel->isConnected());
     }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::reconnect
+     *
+     * @group  interface
+     */
+    public function testReconnect()
+    {
+        $this->channel->shouldReceive('disconnect')->withNoArgs()->andReturn(true)->once()->ordered();
+        $this->channel->shouldReceive('connect')->withNoArgs()->andReturn(true)->once()->ordered();
+
+        $this->assertTrue($this->channel->reconnect());
+    }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::getActiveChannel
+     *
+     * @group  driver-specific
+     */
+    public function testGetActiveChannel()
+    {
+        $this->assertFalse($this->channel->isConnected());
+
+        $amqp_channel = m::mock('stdClass');
+        $amqp_channel->shouldReceive('isConnected')->withNoArgs()->once()->andReturn(true);
+
+        $this->connection->shouldReceive('createChannel')->withNoArgs()->once()->andReturn($amqp_channel);
+
+        $this->assertSame($amqp_channel, $this->channel->getActiveChannel());
+        $this->assertSame($amqp_channel, $this->channel->getActiveChannel());
+    }
+
+    // !!! INVALID TEST CASES BELOW !!! TODO: refactor them
+
+
+//    /**
+//     * @covers                   \AMQPy\Drivers\PhpAmqpExtensionDriver::getActiveConnection
+//     *
+//     * @expectedException \AMQPy\Drivers\DriverException
+//     * @expectedExceptionMessage No connection credentials set
+//     *
+//     * @group                    internals
+//     */
+//    public function testGetActiveConnectionWhenNoCredentialsSet()
+//    {
+//        $driver = $this->driver;
+//
+//        $driver->getActiveConnection();
+//    }
+//
+//    /**
+//     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::getActiveConnection
+//     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::refreshInternals
+//     *
+//     * @group  internals
+//     */
+//    public function testGetActiveConnection()
+//    {
+//        $driver = $this->driver;
+//
+//        $connection = m::mock('stdClass');
+//        $connection->shouldReceive('connect')->once();
+//        $connection->shouldReceive('isConnected')->once()->andReturn(false);
+//        $connection->shouldReceive('reconnect')->once();
+//
+//        $credentials = array('user' => 'dummy');
+//
+//        $driver->connect($credentials);
+//
+//        $driver->shouldReceive('makeClass')
+//               ->with('AMQPConnection', array($credentials))
+//               ->once()
+//               ->andReturn($connection);
+//
+//        $this->assertSame($connection, $driver->getActiveConnection());
+//        $this->assertSame($connection, $driver->getActiveConnection());
+//    }
+//
+//    /**
+//     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::getActiveChannel
+//     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::refreshInternals
+//     *
+//     * @group  internals
+//     */
+//    public function testGetActiveChannel()
+//    {
+//        $driver = $this->driver;
+//
+//        $dead_channel = m::mock('stdClass');
+//        $dead_channel->shouldReceive('isConnected')->once()->andReturn(false);
+//
+//        $channel = m::mock('stdClass');
+//        $channel->shouldReceive('isConnected')->once()->andReturn(true);
+//
+//        $connection = m::mock('stdClass');
+//
+//        $driver->shouldReceive('getActiveConnection')->twice()->andReturn($connection);
+//
+//        $driver->shouldReceive('makeClass')
+//               ->with('AMQPChannel', array($connection))
+//               ->twice()
+//               ->andReturnValues(array($dead_channel, $channel));
+//
+//        $this->assertSame($dead_channel, $driver->getActiveChannel());
+//        $this->assertSame($channel, $driver->getActiveChannel());
+//        $this->assertSame($channel, $driver->getActiveChannel());
+//    }
+//
+//    /**
+//     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::isConnected
+//     *
+//     * @group  interface
+//     */
+//    public function testIsConnected()
+//    {
+//        $driver = $this->driver;
+//
+//        $this->assertFalse($driver->isConnected());
+//
+////        $channel = m::mock('stdClass');
+////        $channel->shouldReceive('isConnected')->once()->andReturn(true);
+//
+////        $connection = m::mock('stdClass');
+////        $connection->shouldReceive('isConnected')->once()->andReturn(true);
+//
+////        $driver->shouldReceive('makeClass')->with('AMQPChannel')->andReturn($channel);
+////        $driver->shouldReceive('makeClass')->with('AMQPConnection')->andReturn($connection);
+//
+//    }
+//
+//    /**
+//     * @covers \AMQPy\Drivers\PhpAmqpExtensionDriver::isConnected
+//     *
+//     * @group  interface
+//     */
+//    public function testIsConnectedOnChannel()
+//    {
+//        $driver = $this->driver;
+//
+//        $connection = m::mock('stdClass');
+//
+//        $channel = m::mock('stdClass');
+//        $channel->shouldReceive('isConnected')->twice()->andReturnValues(array(true, false));
+//
+//        $driver->shouldReceive('makeClass')->with('AMQPConnection', array(array()))->andReturn($connection);
+//        $driver->shouldReceive('makeClass')->with('AMQPChannel', array($connection))->andReturn($channel);
+//
+//        $this->assertFalse($driver->isConnected());
+//
+//        $driver->getActiveChannel();
+//
+//        $this->assertTrue($driver->isConnected());
+//
+////        $channel = m::mock('stdClass');
+////        $channel->shouldReceive('isConnected')->once()->andReturn(true);
+//
+////        $connection = m::mock('stdClass');
+////        $connection->shouldReceive('isConnected')->once()->andReturn(true);
+//
+////        $driver->shouldReceive('makeClass')->with('AMQPChannel')->andReturn($channel);
+////        $driver->shouldReceive('makeClass')->with('AMQPConnection')->andReturn($connection);
+//
+//    }
+//
 
 }
  
