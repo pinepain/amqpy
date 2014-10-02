@@ -9,6 +9,7 @@ class Connection implements ConnectionInterface
 {
     private $credentials;
     private $async;
+    private $persistent;
 
     /**
      * @var \AMQPConnection
@@ -33,10 +34,11 @@ class Connection implements ConnectionInterface
         return $this->makeClass('AMQPChannel', $this->connection);
     }
 
-    public function __construct(array $credentials = array(), $async = false)
+    public function __construct(array $credentials = array(), $async = false, $persistent = false)
     {
         $this->credentials = $credentials;
         $this->async       = $async;
+        $this->persistent  = $persistent;
     }
 
     /**
@@ -58,6 +60,17 @@ class Connection implements ConnectionInterface
     {
         return $this->async;
     }
+
+    /**
+     * Check whether connection persistent
+     *
+     * @return bool
+     */
+    public function isPersistent()
+    {
+        return $this->persistent;
+    }
+
 
     /**
      * Connect to AMQP server

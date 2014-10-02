@@ -22,6 +22,13 @@ interface ConnectionInterface
      */
     public function isAsync();
 
+    /**
+     * Check whether connection persistent
+     *
+     * @return bool
+     */
+    public function isPersistent();
+
     ///**
     // * Whether transaction started
     // *
