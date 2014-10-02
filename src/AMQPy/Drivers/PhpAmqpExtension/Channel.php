@@ -30,35 +30,35 @@ class Channel implements ChannelInterface
     private $exchange;
 
     protected static $properties_type = array(
-        "content_type"        => 'string',
-        "content_encoding"    => 'string',
-        "application_headers" => 'array',
-        "delivery_mode"       => 'int',
-        "priority"            => 'int',
-        "correlation_id"      => 'string',
-        "reply_to"            => 'string',
-        "expiration"          => 'string',
-        "message_id"          => 'string',
-        "timestamp"           => 'int',
-        "type"                => 'string',
-        "user_id"             => 'string',
-        "app_id"              => 'string',
+        "content-type"     => 'string',
+        "content-encoding" => 'string',
+        "headers"          => 'array',
+        "delivery-mode"    => 'int',
+        "priority"         => 'int',
+        "correlation-id"   => 'string',
+        "reply-to"         => 'string',
+        "expiration"       => 'string',
+        "message-id"       => 'string',
+        "timestamp"        => 'int',
+        "type"             => 'string',
+        "user-id"          => 'string',
+        "app-id"           => 'string',
     );
 
     protected static $properties_accessor = array(
-        'content_type'     => 'getContentType',
-        'content_encoding' => 'getContentEncoding',
+        'content-type'     => 'getContentType',
+        'content-encoding' => 'getContentEncoding',
         'headers'          => 'getHeaders',
-        'delivery_mode'    => 'getDeliveryMode',
+        'delivery-mode'    => 'getDeliveryMode',
         'priority'         => 'getPriority',
-        'correlation_id'   => 'getCorrelationId',
-        'reply_to'         => 'getReplyTo',
+        'correlation-id'   => 'getCorrelationId',
+        'reply-to'         => 'getReplyTo',
         'expiration'       => 'getExpiration',
-        'message_id'       => 'getMessageId',
+        'message-id'       => 'getMessageId',
         'timestamp'        => 'getTimestamp',
         'type'             => 'getType',
-        'user_id'          => 'getUserId',
-        'app_id'           => 'getAppId',
+        'user-id'          => 'getUserId',
+        'app-id'           => 'getAppId',
     );
 
     /**
@@ -208,11 +208,11 @@ class Channel implements ChannelInterface
         }
 
         $delivery_info = array(
-            'delivery_tag'  => $envelope->getDeliveryTag(),
+            'delivery-tag'  => $envelope->getDeliveryTag(),
             'redelivered'   => $envelope->isRedelivery(),
             'exchange'      => $envelope->getExchangeName(),
-            'routing_key'   => $envelope->getRoutingKey(),
-            'message_count' => false, // unavailable within php-amqp
+            'routing-key'   => $envelope->getRoutingKey(),
+            'message-count' => false, // unavailable within php-amqp
         );
 
         return array($body, $delivery_info, $properties);

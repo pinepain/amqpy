@@ -224,6 +224,85 @@ class ChannelTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($amqp_queue, $this->channel->getActiveQueue());
     }
 
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::decodeEnvelope
+     *
+     * @group  driver-specific
+     */
+    public function testDecodeEmptyEnvelope()
+    {
+        $this->assertNull($this->channel->decodeEnvelope(null));
+    }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::decodeEnvelope
+     *
+     * @group  driver-specific
+     */
+    public function testDecodeEnvelope()
+    {
+        $envelope = m::mock('stdClass');
+
+        $body       = 'test body';
+        $properties = array(
+            "content-type"        => '1',
+            "content-encoding"    => '2',
+            "headers" => '3',
+            "delivery-mode"       => '4',
+            "priority"            => '5',
+            "correlation-id"      => '6',
+            "reply-to"            => '7',
+            "expiration"          => '8',
+            "message-id"          => '9',
+            "timestamp"           => '10',
+            "type"                => '11',
+            "user-id"             => '12',
+            "app-id"              => '13',
+        );
+
+        $delivery_info = array(
+            'delivery-tag'  => '1',
+            'redelivered'   => '2',
+            'exchange'      => '3',
+            'routing-key'   => '4',
+            'message-count' => false,
+        );
+
+        $properties_accessor = array(
+            'getContentType'     => '1',
+            'getContentEncoding' => '2',
+            'getHeaders'         => '3',
+            'getDeliveryMode'    => '4',
+            'getPriority'        => '5',
+            'getCorrelationId'   => '6',
+            'getReplyTo'         => '7',
+            'getExpiration'      => '8',
+            'getMessageId'       => '9',
+            'getTimestamp'       => '10',
+            'getType'            => '11',
+            'getUserId'          => '12',
+            'getAppId'           => '13',
+        );
+
+        $delivery_accessors = array(
+            'getDeliveryTag'  => '1',
+            'isRedelivery'    => '2',
+            'getExchangeName' => '3',
+            'getRoutingKey'   => '4',
+        );
+
+        $envelope->shouldReceive('getBody')->andReturn($body);
+
+        foreach ($delivery_accessors as $accessor => $result) {
+            $envelope->shouldReceive($accessor)->andReturn($result);
+        }
+
+        foreach ($properties_accessor as $accessor => $result) {
+            $envelope->shouldReceive($accessor)->andReturn($result);
+        }
+
+        $this->assertEquals(array($body, $delivery_info, $properties), $this->channel->decodeEnvelope($envelope));
+    }
 
     // !!! INVALID TEST CASES BELOW !!! TODO: refactor them
 
