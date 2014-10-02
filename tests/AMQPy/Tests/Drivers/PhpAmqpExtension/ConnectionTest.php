@@ -62,6 +62,24 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($is_async, $connection->isAsync());
     }
 
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Connection::isPersistent
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Connection::__construct
+     *
+     * @group  interface
+     */
+    public function testIsPersistent()
+    {
+        $is_persistent   = false;
+        $connection = new Connection();
+
+        $this->assertEquals($is_persistent, null, $connection->isPersistent());
+
+        $is_persistent   = true;
+        $connection = new Connection(array(), null, $is_persistent);
+
+        $this->assertEquals($is_persistent, $connection->isPersistent());
+    }
 
     /**
      * @covers \AMQPy\Drivers\PhpAmqpExtension\Connection::makeClass
@@ -129,6 +147,29 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Connection::connect
+     *
+     * @group  interface
+     */
+    public function testConnectPersistent()
+    {
+        $connection = $this->connection;
+
+        $connection->shouldReceive('isPersistent')->andReturn(true);
+
+        $amqp_connection = m::mock('stdClass');
+        $amqp_connection->shouldReceive('pconnect')->withNoArgs()->once()->andReturn(true);
+        $amqp_connection->shouldReceive('isConnected')->withNoArgs()->once()->andReturn(true);
+
+        $connection->shouldReceive('makeClass')->with('AMQPConnection', array())->once()->andReturn($amqp_connection);
+
+        $this->assertTrue($connection->connect());
+        // Connection::connect() method is idempotent
+        $this->assertTrue($connection->connect());
+    }
+
+
+    /**
      * @covers \AMQPy\Drivers\PhpAmqpExtension\Connection::isConnected
      *
      * @group  interface
@@ -179,6 +220,62 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Connection::disconnect
+     *
+     * @group  interface
+     */
+    public function testDisconnectPersistent()
+    {
+        $connection = $this->connection;
+        $connection->shouldReceive('isPersistent')->andReturn(true);
+
+        $amqp_connection = m::mock('stdClass');
+        $amqp_connection->shouldReceive('pconnect')->withNoArgs()->once()->andReturn(true);
+        $amqp_connection->shouldReceive('isConnected')->withNoArgs()->once()->andReturn(true);
+        $amqp_connection->shouldReceive('disconnect')->withNoArgs()->once()->andReturn(true);
+
+        $connection->shouldReceive('makeClass')->with('AMQPConnection', array())->once()->andReturn($amqp_connection);
+
+        // no established connection
+        $this->assertFalse($connection->isConnected());
+        $this->assertTrue($connection->disconnect());
+
+        $connection->connect();
+
+        // we have established connection
+        $this->assertTrue($connection->isConnected());
+        $this->assertTrue($connection->disconnect());
+    }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Connection::disconnect
+     *
+     * @group  interface
+     */
+    public function testDisconnectPersistentForever()
+    {
+        $connection = $this->connection;
+        $connection->shouldReceive('isPersistent')->andReturn(true);
+
+        $amqp_connection = m::mock('stdClass');
+        $amqp_connection->shouldReceive('pconnect')->withNoArgs()->once()->andReturn(true);
+        $amqp_connection->shouldReceive('isConnected')->withNoArgs()->once()->andReturn(true);
+        $amqp_connection->shouldReceive('pdisconnect')->withNoArgs()->once()->andReturn(true);
+
+        $connection->shouldReceive('makeClass')->with('AMQPConnection', array())->once()->andReturn($amqp_connection);
+
+        // no established connection
+        $this->assertFalse($connection->isConnected());
+        $this->assertTrue($connection->disconnect(true));
+
+        $connection->connect();
+
+        // we have established connection
+        $this->assertTrue($connection->isConnected());
+        $this->assertTrue($connection->disconnect(true));
+    }
+
+    /**
      * @covers \AMQPy\Drivers\PhpAmqpExtension\Connection::reconnect
      *
      * @group  interface
@@ -190,6 +287,34 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $amqp_connection = m::mock('stdClass');
         $amqp_connection->shouldReceive('connect')->withNoArgs()->once()->andReturn(true);
         $amqp_connection->shouldReceive('reconnect')->withNoArgs()->once()->andReturn(true);
+        $amqp_connection->shouldReceive('isConnected')->withNoArgs()->twice()->andReturn(true);
+
+        $connection->shouldReceive('makeClass')->with('AMQPConnection', array())->once()->andReturn($amqp_connection);
+
+        // no established connection
+        $this->assertFalse($connection->isConnected());
+        $this->assertTrue($connection->reconnect());
+
+        // we have established connection
+        $this->assertTrue($connection->isConnected());
+        $this->assertTrue($connection->reconnect());
+
+        $this->assertTrue($connection->isConnected());
+    }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Connection::reconnect
+     *
+     * @group  interface
+     */
+    public function testReconnectPersistent()
+    {
+        $connection = $this->connection;
+        $connection->shouldReceive('isPersistent')->andReturn(true);
+
+        $amqp_connection = m::mock('stdClass');
+        $amqp_connection->shouldReceive('pconnect')->withNoArgs()->once()->andReturn(true);
+        $amqp_connection->shouldReceive('preconnect')->withNoArgs()->once()->andReturn(true);
         $amqp_connection->shouldReceive('isConnected')->withNoArgs()->twice()->andReturn(true);
 
         $connection->shouldReceive('makeClass')->with('AMQPConnection', array())->once()->andReturn($amqp_connection);

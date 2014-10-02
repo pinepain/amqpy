@@ -82,7 +82,11 @@ class Connection implements ConnectionInterface
         if (!$this->connection) {
             $this->connection = $this->makeClass('AMQPConnection', $this->credentials);
 
-            return $this->connection->connect();
+            if ($this->isPersistent()) {
+                return $this->connection->pconnect();
+            } else {
+                return $this->connection->connect();
+            }
         }
 
         return $this->connection->isConnected();
@@ -97,16 +101,22 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * Disconnect to AMQP server
+     * Disconnect from AMQP server
+     *
+     * @param bool $forever Should persistent connection be disconnected
      *
      * @return bool Whether disconnected from server
      */
-    public function disconnect()
+    public function disconnect($forever = false)
     {
         $return = true;
 
         if ($this->connection) {
-            $return = $this->connection->disconnect();
+            if ($this->isPersistent() && $forever) {
+                $return = $this->connection->pdisconnect();
+            } else {
+                $return = $this->connection->disconnect();
+            }
 
             $this->connection = null;
         }
@@ -123,6 +133,10 @@ class Connection implements ConnectionInterface
     {
         if (!$this->connection) {
             return $this->connect();
+        }
+
+        if ($this->isPersistent()) {
+            return $this->connection->preconnect();
         }
 
         return $this->connection->reconnect();

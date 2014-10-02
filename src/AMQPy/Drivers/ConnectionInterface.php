@@ -58,11 +58,13 @@ interface ConnectionInterface
     public function isConnected();
 
     /**
-     * Disconnect to AMQP server
+     * Disconnect from AMQP server
+     *
+     * @param bool $forever Should persistent connection be disconnected
      *
      * @return bool Whether disconnected from server
      */
-    public function disconnect();
+    public function disconnect($forever = false);
 
     /**
      * Reconnect to AMQP server
