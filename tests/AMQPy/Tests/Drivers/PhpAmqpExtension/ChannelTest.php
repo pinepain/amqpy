@@ -179,6 +179,43 @@ class ChannelTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($amqp_channel, $this->channel->getActiveChannel());
     }
 
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::getActiveExchange
+     *
+     * @group  driver-specific
+     */
+    public function testGetActiveExchange()
+    {
+        $this->assertFalse($this->channel->isConnected());
+
+        $this->channel->shouldReceive('connect')->withNoArgs()->once();
+
+        $amqp_exchange = m::mock('stdClass');
+        $this->connection->shouldReceive('makeClass')->once()->with('AMQPExchange', null)->andReturn($amqp_exchange);
+
+        $this->assertSame($amqp_exchange, $this->channel->getActiveExchange());
+        $this->assertSame($amqp_exchange, $this->channel->getActiveExchange());
+    }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::getActiveQueue
+     *
+     * @group  driver-specific
+     */
+    public function testGetActiveQueue()
+    {
+        $this->assertFalse($this->channel->isConnected());
+
+        $this->channel->shouldReceive('connect')->withNoArgs()->once();
+
+        $amqp_queue = m::mock('stdClass');
+        $this->connection->shouldReceive('makeClass')->once()->with('AMQPQueue', null)->andReturn($amqp_queue);
+
+        $this->assertSame($amqp_queue, $this->channel->getActiveQueue());
+        $this->assertSame($amqp_queue, $this->channel->getActiveQueue());
+    }
+
+
     // !!! INVALID TEST CASES BELOW !!! TODO: refactor them
 
 
