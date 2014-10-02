@@ -53,9 +53,18 @@ class ChannelTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsAsync()
     {
-        /** @var  $connection */
         $this->connection->shouldReceive('isAsync')->withNoArgs()->once()->andReturn(true);
         $this->assertTrue($this->channel->isAsync());
+    }
+
+    /**
+     * @covers \AMQPy\Drivers\PhpAmqpExtension\Channel::isPersistent
+     *
+     * @group  interface
+     */
+    public function testIsPersistent()
+    {
+        $this->assertFalse($this->channel->isPersistent());
     }
 
     /**

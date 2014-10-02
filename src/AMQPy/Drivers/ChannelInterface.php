@@ -24,6 +24,13 @@ interface ChannelInterface
      */
     public function isAsync();
 
+    /**
+     * Check whether channel persistent
+     *
+     * @return bool
+     */
+    public function isPersistent();
+
     ///**
     // * Whether transaction started
     // *

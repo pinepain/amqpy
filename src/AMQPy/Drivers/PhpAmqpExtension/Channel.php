@@ -88,6 +88,17 @@ class Channel implements ChannelInterface
     }
 
     /**
+     * Check whether channel persistent
+     *
+     * @return bool
+     */
+    public function isPersistent()
+    {
+        // NOTE: even on persistent php-amqp connections CHANNELS ARE NOT PERSISTENT
+        return false;
+    }
+
+    /**
      * When in asynchronous mode listen for new data from AMQP broker, ignored otherwise.
      *
      * @return mixed
