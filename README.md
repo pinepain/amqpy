@@ -1,3 +1,6 @@
+WARNING: This project is UNSUPPORTED and ABANDONED
+==============
+
 [![Build Status](https://travis-ci.org/pinepain/amqpy.png?branch=master)](https://travis-ci.org/pinepain/amqpy)
 
 AMQPy
